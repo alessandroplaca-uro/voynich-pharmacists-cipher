@@ -1,0 +1,40 @@
+{
+  "description": "Functional categories for Result 4 positional-constraint analysis",
+  "categories": {
+    "OPER": {
+      "description": "Operational / process tokens",
+      "rules": [
+        "starts_with('ch')",
+        "starts_with('sh')",
+        "starts_with('ot') AND NOT starts_with('oth')",
+        "starts_with('y')"
+      ]
+    },
+    "VEIC": {
+      "description": "Vehicle / solvent tokens",
+      "rules": [
+        "starts_with('qok')",
+        "starts_with('qot')",
+        "starts_with('ok') AND NOT starts_with('qok')",
+        "token == 'sol' OR starts_with('sol')"
+      ]
+    },
+    "MAT": {
+      "description": "Material / ingredient tokens",
+      "rules": [
+        "starts_with('da')",
+        "token in {'kol', 'kor', 'kal', 'kar'}",
+        "token in {'cth', 'ckh', 'cfh', 'cph'}"
+      ]
+    },
+    "COMPL": {
+      "description": "Completion / closure tokens",
+      "rules": [
+        "token in {'dam', 'sam', 'dy'}",
+        "token.endswith('am') AND len(token) > 2"
+      ]
+    }
+  },
+  "procedural_sections": ["Herbal_A", "Herbal_B", "Pharma", "Balneo"],
+  "notes": "Categories are not mutually exclusive in theory but rarely overlap in practice. OPER/VEIC ambiguity is handled by checking VEIC rules before OPER in the classifier."
+}

@@ -1,0 +1,90 @@
+{
+  "prefixes": [
+    {
+      "label": "ch-",
+      "prefix": "ch",
+      "exclude": [],
+      "density_permille_H": null,
+      "notes": "Hot-process marker. ch = c (hot quality) + h (process vector). Near-parity with sh- in Balneo section only."
+    },
+    {
+      "label": "sh-",
+      "prefix": "sh",
+      "exclude": [],
+      "density_permille_H": null,
+      "notes": "Cold-process marker. sh = s (cold quality) + h (process vector). sh- takes processual suffixes at 3.8x the rate s- does."
+    },
+    {
+      "label": "da-",
+      "prefix": "da",
+      "exclude": [],
+      "density_permille_H": null,
+      "notes": "Medicine / essence prefix. Stable across all sections; ratio C/H approximately 1.00."
+    },
+    {
+      "label": "ok-",
+      "prefix": "ok",
+      "exclude": [],
+      "density_permille_H": null,
+      "notes": "Water-locative prefix: o (in) + k (water). Distinct from qok- (dosed water)."
+    },
+    {
+      "label": "qok-",
+      "prefix": "qok",
+      "exclude": [],
+      "density_permille_H": null,
+      "notes": "Dosed-water verbal paradigm: qo (dose) + k (water). 51% of tokens end in -y (processual)."
+    },
+    {
+      "label": "qot-",
+      "prefix": "qot",
+      "exclude": [],
+      "density_permille_H": null,
+      "notes": "Dosed-oil verbal paradigm: qo (dose) + t (oil). qotch/qotsh ratio ~12:1 (more hot-biased than water)."
+    },
+    {
+      "label": "ot-",
+      "prefix": "ot",
+      "exclude": ["oth"],
+      "density_permille_H": null,
+      "notes": "Passive / reflexive prefix. Enriched 2.4x in Zodiac (descriptive register). Exclude tokens starting with 'oth'."
+    },
+    {
+      "label": "l-",
+      "prefix": "l",
+      "exclude": [],
+      "density_permille_H": null,
+      "notes": "Spirit (alcohol) prefix. Enriched 3.37x in Stars section (formulary of tinctures)."
+    },
+    {
+      "label": "y-",
+      "prefix": "y",
+      "exclude": [],
+      "density_permille_H": null,
+      "notes": "Imperative prefix. Enriched ~2x in Cosmo section."
+    },
+    {
+      "label": "s-",
+      "prefix": "s",
+      "exclude": ["sh"],
+      "density_permille_H": null,
+      "notes": "Vinegar prefix. IMPORTANT: must exclude tokens starting with 'sh' to avoid conflating with cold-process marker. s- takes nominal suffixes at 108x the rate it takes processual suffixes."
+    },
+    {
+      "label": "t-",
+      "prefix": "t",
+      "exclude": ["th"],
+      "density_permille_H": null,
+      "notes": "Oil prefix. Exclude tokens starting with 'th'. qotch/qotsh ~12:1 reflects hot extraction bias for oils."
+    }
+  ],
+  "corpus_notes": {
+    "transcriber_H": "Takahashi transcription (filter tag ';H>')",
+    "transcriber_C": "Currier transcription (filter tag ';C>')",
+    "token_separator": "dot ('.')",
+    "encoding": "latin-1",
+    "illegible_marker": "'-' (omit from analysis)",
+    "standalone_matching": "All prefix counts use standalone word-boundary matching on full tokens. Substring matching is never used.",
+    "uncertainty_marker": "'!' characters within tokens indicate uncertain readings; strip before analysis."
+  }
+}

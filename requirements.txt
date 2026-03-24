@@ -1,0 +1,5 @@
+# The scripts use only Python standard library modules.
+# No third-party packages are required.
+#
+# Tested with Python 3.9+
+# Standard library modules used: re, sys, pathlib, collections, math, itertools, subprocess

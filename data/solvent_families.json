@@ -1,0 +1,40 @@
+{
+  "description": "Solvent families for Result 6 volume-hierarchy analysis",
+  "families": {
+    "WATER": {
+      "prefixes": ["ok", "qok"],
+      "exclude": [],
+      "expected_volume_rank": 1,
+      "rationale": "Water is the most abundant solvent in medieval pharmacy (decoctions, washes, infusions). Largest volume per preparation."
+    },
+    "OIL": {
+      "prefixes": ["t", "qot"],
+      "exclude": ["th"],
+      "expected_volume_rank": 2,
+      "rationale": "Oil-based preparations use moderate volumes for infused oils, macerations, and topical applications."
+    },
+    "SPIRIT": {
+      "prefixes": ["l"],
+      "exclude": [],
+      "expected_volume_rank": 3,
+      "rationale": "Alcohol tinctures use moderate volumes but less than water or oil; spirit is a concentrated extractant."
+    },
+    "VINEGAR": {
+      "prefixes": ["s"],
+      "exclude": ["sh"],
+      "expected_volume_rank": 4,
+      "rationale": "Vinegar is used in small quantities as a preservative, astringent, and antipyretic agent."
+    },
+    "MEDICINE": {
+      "prefixes": ["da"],
+      "exclude": [],
+      "expected_volume_rank": 5,
+      "rationale": "The medicine / essence itself is the concentrated product; smallest volume by definition."
+    }
+  },
+  "ee_marker": {
+    "description": "The doubled-e marker 'ee' within a token (e.g., qokeey, lkeedy)",
+    "detection": "substring match: 'ee' in token",
+    "interpretation": "Marks abundant / copious quantity of the prefixed substance. Frequency of ee-marked tokens mirrors expected solvent volume rank."
+  }
+}
