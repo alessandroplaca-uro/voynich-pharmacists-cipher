@@ -2,9 +2,9 @@
 
 Replication scripts for:
 
-> Placa, A. (2026). *The Pharmacist's Cipher: Morphological Evidence for a
-> Pharmaceutical Register in Voynich Manuscript MS 408*.
-> Preprint. https://doi.org/10.5281/zenodo.19197846
+> Placa, A. (2026). *The Pharmacist's Cipher: Six Statistical Tests Supporting
+> a Pharmaceutical Reading of the Voynich Manuscript (MS 408)*.
+> Preprint v1.1. https://doi.org/10.5281/zenodo.19197846
 
 ---
 
@@ -99,6 +99,10 @@ The s- prefix (excluding sh-) takes nominal suffixes at 108× the rate it
 takes processual suffixes; sh- takes processual suffixes at 3.8× the rate
 it takes nominal suffixes.
 
+**Note:** `sh` is a unitary glyph (bench character), not a sequence of `s` + `h`.
+The morphological gap between s- and sh- reflects two distinct graphemic
+classes, not a compositional difference.
+
 ### Result 3 — Asymmetric cross-section reuse (`03_asymmetric_reuse.py`)
 
 Checks whether first-tokens of Pharma lines appear in Stars vocabulary,
@@ -134,6 +138,10 @@ the rank matches the expected volume rank.
 permutation test, n=5, 120 permutations).
 Expected rank: WATER > OIL ≈ SPIRIT > VINEGAR > MEDICINE.
 
+**Note:** The ee-suffix profile is concentrated in ok-/ot- (water/oil) families.
+The volume hierarchy holds as a statistical correlation across all five families,
+but the morphological mechanism is specific to the aqueous/oily context.
+
 ---
 
 ## Standalone token matching
@@ -160,10 +168,10 @@ Commons licence. The corpus transcription files have their own terms of use
 ```bibtex
 @unpublished{Placa2026,
   author = {Placa, Alessandro},
-  title  = {The Pharmacist's Cipher: Morphological Evidence for a
-            Pharmaceutical Register in Voynich Manuscript {MS} 408},
+  title  = {The Pharmacist's Cipher: Six Statistical Tests Supporting
+            a Pharmaceutical Reading of the Voynich Manuscript ({MS} 408)},
   year   = {2026},
-  note   = {Preprint. \doi{10.5281/zenodo.19197846}},
+  note   = {Preprint v1.1. \doi{10.5281/zenodo.19197846}},
   doi    = {10.5281/zenodo.19197846},
   url    = {https://github.com/alessandroplaca-uro/voynich-pharmacists-cipher}
 }

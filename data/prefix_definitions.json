@@ -5,14 +5,14 @@
       "prefix": "ch",
       "exclude": [],
       "density_permille_H": null,
-      "notes": "Hot-process marker. ch = c (hot quality) + h (process vector). Near-parity with sh- in Balneo section only."
+      "notes": "Hot-temperature bench character (unitary glyph). ch and sh are NOT decomposable into c+h / s+h — they form a single graphemic class with 76.5% suffix overlap with each other, vs only 11.1% with bare s-. Near-parity with sh- in Balneo section only."
     },
     {
       "label": "sh-",
       "prefix": "sh",
       "exclude": [],
       "density_permille_H": null,
-      "notes": "Cold-process marker. sh = s (cold quality) + h (process vector). sh- takes processual suffixes at 3.8x the rate s- does."
+      "notes": "Cold-temperature bench character (unitary glyph). sh and ch are NOT decomposable into s+h / c+h. sh- takes processual suffixes (-edy, -eey) at 3.8x the rate bare s- does, confirming they are distinct morphemes."
     },
     {
       "label": "da-",
@@ -54,7 +54,7 @@
       "prefix": "l",
       "exclude": [],
       "density_permille_H": null,
-      "notes": "Spirit (alcohol) prefix. Enriched 3.37x in Stars section (formulary of tinctures)."
+      "notes": "Spirit (alcohol) prefix. l = alcohol/spirit univocally (no positional disambiguation). Enriched 3.37x in Stars section (formulary of tinctures)."
     },
     {
       "label": "y-",
@@ -68,7 +68,7 @@
       "prefix": "s",
       "exclude": ["sh"],
       "density_permille_H": null,
-      "notes": "Vinegar prefix. IMPORTANT: must exclude tokens starting with 'sh' to avoid conflating with cold-process marker. s- takes nominal suffixes at 108x the rate it takes processual suffixes."
+      "notes": "Vinegar / cold-acetic prefix. IMPORTANT: must exclude tokens starting with 'sh' to avoid conflating with the unitary bench character sh-. s- takes nominal suffixes at 108x the rate it takes processual suffixes. Note: s- = cold/acetic on the same Galenic axis; context determines whether 'vinegar' or 'cold quality' is the better gloss."
     },
     {
       "label": "t-",
@@ -85,6 +85,7 @@
     "encoding": "latin-1",
     "illegible_marker": "'-' (omit from analysis)",
     "standalone_matching": "All prefix counts use standalone word-boundary matching on full tokens. Substring matching is never used.",
-    "uncertainty_marker": "'!' characters within tokens indicate uncertain readings; strip before analysis."
+    "uncertainty_marker": "'!' characters within tokens indicate uncertain readings; strip before analysis.",
+    "bench_characters": "ch and sh are unitary glyphs (bench characters), not sequences of c+h or s+h. They share 76.5% suffix overlap with each other but only 11.1% with bare s-. Do not decompose them morphemically."
   }
 }

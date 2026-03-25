@@ -1,12 +1,12 @@
 # AI Verification Guide — Placa (2026)
 
-**Version 1.1 — 2026-03-23**
+**Version 1.2 — 2026-03-25**
 
 This guide provides structured prompts for AI-assisted replication of the six
 morphological results reported in:
 
-> Placa, A. (2026). *The Pharmacist's Cipher: Morphological Evidence for a
-> Pharmaceutical Register in Voynich Manuscript MS 408*. Preprint.
+> Placa, A. (2026). *The Pharmacist's Cipher: Six Statistical Tests Supporting
+> a Pharmaceutical Reading of the Voynich Manuscript (MS 408)*. Preprint v1.1.
 > https://doi.org/10.5281/zenodo.19197846
 
 ---
@@ -36,6 +36,11 @@ Before running any verification, confirm the following with your AI assistant:
    Tokens equal to `-` (single dash) represent unreadable glyphs; skip them.
 
 6. **Encoding is latin-1.** Open the corpus file with `encoding='latin-1'`.
+
+7. **`ch` and `sh` are unitary glyphs.**
+   These are "bench characters" — single graphemic units, NOT sequences of
+   `c` + `h` or `s` + `h`. They share 76.5% suffix overlap with each other,
+   but only 11.1% with bare `s-`. Do not decompose them morphemically.
 
 ---
 
@@ -102,6 +107,9 @@ Then classify all s- tokens (excluding sh-) and all sh- tokens by suffix type:
 Report counts and percentages for each category × prefix family.
 Report the nominal/processual ratio for s- and the processual/nominal
 ratio for sh-.
+
+Note: sh is a unitary glyph (bench character), not s + h. The morphological
+gap reflects two distinct graphemic classes.
 ```
 
 ### Expected ranges
@@ -238,8 +246,9 @@ Each section has a distinct morphological fingerprint. Stars is the most
 alcohol-heavy section (l- enriched), consistent with tincture formulae.
 Zodiac uses the passive marker ot- heavily (descriptive register) while
 depleting process-action markers. Balneo is the only section where
-hot-process (ch-) and cold-process (sh-) markers reach near-parity,
-consistent with therapeutic baths that apply both thermal modalities.
+hot-temperature (ch-) and cold-temperature (sh-) bench characters reach
+near-parity, consistent with therapeutic baths that apply both thermal
+modalities.
 
 ---
 
@@ -286,6 +295,12 @@ medieval pharmacy. The exact permutation test has only 120 equally likely
 outcomes under the null, so ρ ≥ 0.90 yields a genuine p < 0.05 without
 asymptotic approximations.
 
+**Note on ee-suffix distribution:** The suffixes -eey/-edy/-eedy/-eol/-eody
+are concentrated in ok-/ot- (water/oil) families and have near-zero
+occurrence in ol-/s- families. The volume hierarchy holds as a statistical
+correlation across all five families, but the underlying morphological
+mechanism appears specific to the aqueous/oily context.
+
 ---
 
 ## Troubleshooting Checklist
@@ -295,7 +310,7 @@ If your numbers differ from the expected ranges above:
 - [ ] **Token separator**: are you splitting on `.` (dot), not on spaces?
 - [ ] **Transcriber filter**: are you filtering for `;H>` (Takahashi)?
 - [ ] **s- / sh- confusion**: does your s- filter explicitly exclude tokens
-  starting with `sh`?
+  starting with `sh`? Remember: `sh` is a unitary glyph, not `s` + `h`.
 - [ ] **t- / th- confusion**: does your t- filter explicitly exclude tokens
   starting with `th`?
 - [ ] **ot- / oth- confusion**: does your ot- filter explicitly exclude

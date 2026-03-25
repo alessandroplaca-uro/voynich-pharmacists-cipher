@@ -33,8 +33,8 @@
     }
   },
   "ee_marker": {
-    "description": "The doubled-e marker 'ee' within a token (e.g., qokeey, lkeedy)",
+    "description": "The doubled-e marker 'ee' within a token (e.g., qokeey, okeedy)",
     "detection": "substring match: 'ee' in token",
-    "interpretation": "Marks abundant / copious quantity of the prefixed substance. Frequency of ee-marked tokens mirrors expected solvent volume rank."
+    "interpretation": "The ee-marker frequency mirrors expected solvent volume rank, but the suffix profile is NOT uniform across all prefix families. Suffixes -eey/-edy/-eedy/-eol/-eody are concentrated in ok- and ot- (water/oil) families, with near-zero occurrence in ol-/s-/op-/of-. The volume hierarchy (Result 6) holds as a statistical correlation across families, but the morphological mechanism is specific to the aqueous/oily context, not a universal 'abundance' marker."
   }
 }
