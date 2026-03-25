@@ -47,21 +47,28 @@
       "prefix": "ot",
       "exclude": ["oth"],
       "density_permille_H": null,
-      "notes": "Passive / reflexive prefix. Enriched 2.4x in Zodiac (descriptive register). Exclude tokens starting with 'oth'."
+      "notes": "Passive / reflexive prefix. Enriched 2.43x in Zodiac (155.0 permille vs corpus 63.7 permille). Exclude tokens starting with 'oth'."
     },
     {
       "label": "l-",
       "prefix": "l",
       "exclude": [],
       "density_permille_H": null,
-      "notes": "Spirit (alcohol) prefix. l = alcohol/spirit univocally (no positional disambiguation). Enriched 3.37x in Stars section (formulary of tinctures)."
+      "notes": "Spirit (alcohol) prefix. l = alcohol/spirit univocally (no positional disambiguation). Enriched 1.97x vs corpus baseline in Stars section (73.2 permille vs corpus 37.1 permille)."
+    },
+    {
+      "label": "y-",
+      "prefix": "y",
+      "exclude": [],
+      "density_permille_H": null,
+      "notes": "Imperative prefix. Enriched ~2x in Cosmo section."
     },
     {
       "label": "s-",
       "prefix": "s",
       "exclude": ["sh"],
       "density_permille_H": null,
-      "notes": "Vinegar / cold-acetic prefix. IMPORTANT: must exclude tokens starting with 'sh' to avoid conflating with the unitary bench character sh-. s- takes nominal suffixes at 108x the rate it takes processual suffixes. Note: s- = cold/acetic on the same Galenic axis; context determines whether 'vinegar' or 'cold quality' is the better gloss."
+      "notes": "Vinegar / cold-acetic prefix. IMPORTANT: must exclude tokens starting with 'sh' to avoid conflating with the unitary bench character sh-. s- carries processual suffixes at 7.4% (mostly compound forms) vs nominal suffixes at 36.5%. Note: s- = cold/acetic on the same Galenic axis; context determines whether 'vinegar' or 'cold quality' is the better gloss."
     },
     {
       "label": "t-",
@@ -69,13 +76,6 @@
       "exclude": ["th"],
       "density_permille_H": null,
       "notes": "Oil prefix. Exclude tokens starting with 'th'. qotch/qotsh ~12:1 reflects hot extraction bias for oils."
-    },
-    {
-      "label": "y-",
-      "prefix": "y",
-      "exclude": [],
-      "density_permille_H": null,
-      "notes": "Imperative / processual prefix. Pragmatic note: in pharmaceutical recipe context, 'process!' realizes as 'mix/incorporate' — no separate 'mix' morpheme exists. The doubled form -yy is NOT productive (3 occ. corpus-wide, ratio 4901:1 vs single -y); 2/3 on f86v4 as ritual closure of the mnemonic song."
     }
   ],
   "corpus_notes": {

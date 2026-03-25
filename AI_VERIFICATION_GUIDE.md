@@ -65,7 +65,7 @@ sections: Herbal_A, Balneo, Pharma, Zodiac, Stars.
 ### Expected ranges
 
 | Prefix | Ratio C/H |
-|--------|-----------:|
+|--------|-----------|
 | ch-    | 0.97–1.03 |
 | sh-    | 0.97–1.03 |
 | da-    | ~1.00     |
@@ -105,28 +105,35 @@ Then classify all s- tokens (excluding sh-) and all sh- tokens by suffix type:
   - other:      everything else
 
 Report counts and percentages for each category × prefix family.
-Report the nominal/processual ratio for s- and the processual/nominal
-ratio for sh-.
+Report the ratio sh/s for processual suffixes and for nominal suffixes.
 
 Note: sh is a unitary glyph (bench character), not s + h. The morphological
 gap reflects two distinct graphemic classes.
 ```
 
-### Expected ranges
+### Expected ranges (from paper Table 2)
 
 - `sedy` count: **0** (zero)
-- `shedy` count: **299–425**
-- s- processual rate: < 2%
-- sh- processual rate: > 40%
-- s- nominal/processual ratio: **≥ 80×** (paper reports 108×)
-- sh- processual/nominal ratio: **≥ 3×** (paper reports 3.8×)
+- `shedy` count: **~424**
+- s- total tokens: **~1,250**
+- sh- total tokens: **~3,175**
+- s- processual rate: **~7.4%** (93 tokens; mostly compound forms like solchedy)
+- sh- processual rate: **~33.7%** (1,070 tokens)
+- Processual ratio sh/s: **~4.6×**
+- s- nominal rate: **~36.5%** (456 tokens)
+- sh- nominal rate: **~10.5%** (333 tokens)
+- Nominal ratio sh/s: **~0.29×**
 
 ### Interpretation
 
 The binary gap (sedy = 0, shedy ≫ 0) is the strongest single piece of
 evidence that s- and sh- are functionally distinct morphemes, not
 orthographic variants. A purely scribal origin would predict gradual
-variation, not a binary cliff.
+variation, not a binary cliff. The suffix distributions are inverted:
+s- skews nominal (36.5% vs 7.4%), sh- skews processual (33.7% vs 10.5%).
+The 93 processual s- tokens are predominantly compound forms (e.g.,
+solchedy, schedy) where the processual suffix attaches to an intervening
+element, not directly to s-.
 
 ---
 
@@ -150,12 +157,15 @@ Using the Takahashi transcription:
    Stars — the fraction that appear at position 0 (first token of their line).
 ```
 
-### Expected ranges
+### Expected ranges (from paper Table 3)
 
-- A (Pharma → Stars): **6–15 total occurrences**
+- A (Pharma → Stars): **26 occurrences** (7 of 32 distinct folio identifiers)
 - B (Stars → Pharma): **0**
-- Asymmetry ratio A/B: **≥ 6×** (effectively infinite if B = 0)
-- Line-initial rate of A tokens in Stars: **≥ 80%**
+- Asymmetry ratio A/B: **infinite** (26 vs 0)
+- Line-initial rate of A tokens in Stars: **~86.7%**
+
+Note: Pharma has 32 folio identifiers (not 16) because some folios have
+multiple sub-pages (recto + verso, or sub-folios like f90v1/f90v2).
 
 ### Interpretation
 
@@ -175,7 +185,7 @@ Using the Takahashi transcription, restrict to procedural sections:
 Herbal_A, Herbal_B, Pharma, Balneo.
 
 Classify each token into one of four functional categories:
-  OPER  : starts with ch-, sh-, ot-, or y-
+  OPER  : starts with ch-, sh-, ot- (exclude oth-), or y-
   VEIC  : starts with qok-, qot-; or starts with ok- (but not qok-);
            or is exactly "sol" or starts with "sol"
   MAT   : starts with da-; or is one of {kol, kor, kal, kar};
@@ -193,19 +203,22 @@ Report:
      (normalised position ≥ 0.80).
 ```
 
-### Expected ranges
+### Expected ranges (from paper Table 4)
 
-- COMPL mean position: **0.75–0.80** (near end of line)
-- COMPL in final 20%: **> 60%**
-- OPER before MAT: **> 52%**
-- VEIC before MAT: **> 55%**
-- MAT before COMPL: **> 65%**
+- VEIC mean position: **~0.478**
+- OPER mean position: **~0.484**
+- MAT mean position: **~0.582**
+- COMPL mean position: **~0.819**
+- COMPL in final 20%: **~68.2%** (Z = 26.6)
+- OPER before MAT: **~60.0%**
+- MAT before COMPL: **~78.2%**
 - OPER before COMPL: **> 65%**
+- OPER vs VEIC: **~49.4%** (not significant; positionally interchangeable)
 
 ### Interpretation
 
 Completion markers cluster at the end of lines (consistent with a
-phrasingfinal role), while operational and vehicle tokens tend to precede
+phrasing-final role), while operational and vehicle tokens tend to precede
 material tokens. The ordering is probabilistic, not absolute, consistent
 with agglutinative syntax allowing some flexibility.
 
@@ -230,25 +243,25 @@ Then compute enrichment ratios (section density / corpus-wide baseline)
 for: l-, -edy, qok-, ot-.
 ```
 
-### Expected key checks
+### Expected key checks (from paper Table 5)
 
-| Section | Marker       | Expected enrichment |
-|---------|--------------|--------------------:|
-| Stars   | l-           | ~3.4×               |
-| Stars   | -edy         | ~1.5×               |
-| Zodiac  | ot-          | ~2.4×               |
-| Zodiac  | qok-         | ~0.16×  (depleted)  |
-| Balneo  | ch/sh ratio  | ~1.07   (near-parity) |
+| Section | Marker       | Expected enrichment (section/corpus baseline) |
+|---------|--------------|-----------------------------------------------|
+| Stars   | l-           | ~1.97×  (73.2‰ vs corpus 37.1‰)              |
+| Stars   | -edy         | ~1.5×                                          |
+| Zodiac  | ot-          | ~2.43×  (155.0‰ vs corpus 63.7‰)             |
+| Zodiac  | qok-         | ~0.16×  (depleted)                             |
+| Balneo  | ch/sh ratio  | ~1.07   (near-parity)                          |
 
 ### Interpretation
 
 Each section has a distinct morphological fingerprint. Stars is the most
-alcohol-heavy section (l- enriched), consistent with tincture formulae.
-Zodiac uses the passive marker ot- heavily (descriptive register) while
-depleting process-action markers. Balneo is the only section where
-hot-temperature (ch-) and cold-temperature (sh-) bench characters reach
-near-parity, consistent with therapeutic baths that apply both thermal
-modalities.
+alcohol-heavy section (l- enriched 1.97× vs corpus baseline), consistent
+with tincture formulae. Zodiac uses the passive marker ot- heavily
+(descriptive register) while depleting process-action markers. Balneo is
+the only section where hot-temperature (ch-) and cold-temperature (sh-)
+bench characters reach near-parity, consistent with therapeutic baths
+that apply both thermal modalities.
 
 ---
 
@@ -277,16 +290,20 @@ permutations of ranks 1–5, count how many achieve Spearman ρ ≥ the
 observed value, divide by 120.
 ```
 
-### Expected ranges
+### Expected ranges (from paper Table 6)
 
-- WATER ee%: **20–28%**
-- OIL ee%: **12–18%**
-- SPIRIT ee%: **12–18%**
-- VINEGAR ee%: **3–7%**
-- MEDICINE ee%: **< 2%**
-- Spearman ρ: **≥ 0.90**
-- p-value (exact, one-tailed): **< 0.05**
+- WATER ee%: **~23.2%** (1,278 of 5,505)
+- SPIRIT ee%: **~15.3%** (210 of 1,374)
+- OIL ee%: **~13.3%** (279 of 2,098)
+- VINEGAR ee%: **~4.5%** (56 of 1,250)
+- MEDICINE ee%: **~0.4%** (10 of 2,256)
+- Spearman ρ: **0.900** (Σd² = 2, one rank swap between OIL and SPIRIT)
+- p-value (exact, one-tailed): **0.042** (5 of 120 permutations)
 - Expected rank order: WATER > OIL ≈ SPIRIT > VINEGAR > MEDICINE
+
+**⚠️ Errata note:** The preprint reports p = 0.050 two-tailed. The correct
+two-tailed p is 0.083 (10 of 120 permutations with |ρ| ≥ 0.9). The one-tailed
+p = 0.042 is correct and remains significant. See [ERRATA.md](ERRATA.md).
 
 ### Interpretation
 
@@ -321,51 +338,6 @@ If your numbers differ from the expected ranges above:
 - [ ] **Encoding**: did you open the corpus with `encoding='latin-1'`?
 - [ ] **Section boundaries**: folio numbers use the ranges in
   `data/folio_section_mapping.csv`. Folio f74 is absent from the manuscript.
-
----
-
-## Supplementary: The -y Imperative and the -yy Ritual Marker
-
-### Key finding (session 69)
-
-The imperative suffix `-y` has no competing "mix" or "stir" morpheme in the
-system. In pharmaceutical recipe context, `process!` pragmatically realizes as
-`mix/incorporate` — the default action when combining ingredients with solvents.
-
-The doubled form `-yy` is **not** a productive morpheme:
-
-- Only **3 tokens** in the entire corpus (37,036 tokens) end in `-yy`
-- Ratio single `-y` to doubled `-yy`: **4,901:1**
-- 2 of 3 `-yy` tokens appear on f86v4 (the meta-document):
-  - `shyy` (line 3): cold-process + doubled imperative
-  - `yy` (final token of the circular text): ritual closure seal
-- The third: `ytchodyy` (Pharma section)
-
-The terminal `yy` of f86v4 functions as a **performative seal** closing the
-mnemonic song — the pharmaceutical equivalent of "amen" or "so be it", carrying
-the pragmatic force of "mix! mix!" in context.
-
-### Verification prompt
-
-```
-Using the Takahashi transcription, count all tokens that end in exactly
-two consecutive 'y' characters (yy) at the end of the token, but NOT
-tokens ending in a single 'y'.
-
-Report:
-1. Total distinct token types ending in -yy
-2. Total occurrences
-3. For each -yy token: the full token, its folio, line number, and position
-4. The ratio of tokens ending in single -y (but NOT -yy) to those ending in -yy
-5. For f86v4 specifically: list ALL tokens and mark where -yy tokens appear
-```
-
-### Expected values
-
-- Distinct -yy types: **3**
-- Total -yy occurrences: **3**
-- Ratio -y : -yy = **~4,901:1**
-- f86v4 tokens: `shyy` at line 3, `yy` as **final token** of line 9
 
 ---
 

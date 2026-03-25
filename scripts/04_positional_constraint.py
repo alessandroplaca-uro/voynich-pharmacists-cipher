@@ -7,7 +7,7 @@ Method
 1. Load Takahashi (H) transcription.
 2. Restrict to procedural sections: Herbal_A, Herbal_B, Pharma, Balneo.
 3. Classify each token into one of four functional categories:
-     OPER  – operational / process tokens (ch-, sh-, ot-, y-)
+     OPER  – operational / process tokens (ch-, sh-, ot- excl. oth-, y-)
      VEIC  – vehicle / solvent tokens (qok-, qot-, ok-, sol)
      MAT   – material / ingredient tokens (da-, k+quadripolo, gallows ornate)
      COMPL – completion / closure tokens (dam, sam, dy, *am)
@@ -16,7 +16,8 @@ Method
 5. Report mean normalised position per category and pairwise ordering rates.
 
 Expected output (paper):
-  COMPL tokens are in the final 20 % of lines > 60 % of the time.
+  COMPL mean position = 0.819. COMPL tokens are in the final 20% of lines
+  68.2% of the time (Z = 26.6).
   OPER and VEIC tend to precede MAT; MAT tends to precede COMPL.
 """
 
@@ -50,7 +51,7 @@ def classify_token(tok: str) -> str | None:
     # OPER
     if starts_with(tok, 'ch', []) or starts_with(tok, 'sh', []):
         return 'OPER'
-    if starts_with(tok, 'ot', []):
+    if starts_with(tok, 'ot', ['oth']):
         return 'OPER'
     if starts_with(tok, 'y', []):
         return 'OPER'

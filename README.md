@@ -3,8 +3,8 @@
 Replication scripts for:
 
 > Placa, A. (2026). *The Pharmacist's Cipher: Six Statistical Tests Supporting
-> a Pharmaceutical Reading of the Voynich Manuscript (MS 408)*. Preprint v1.1.
-> https://doi.org/10.5281/zenodo.19197846
+> a Pharmaceutical Reading of the Voynich Manuscript (MS 408)*.
+> Preprint v1.1. https://doi.org/10.5281/zenodo.19197846
 
 ---
 
@@ -27,6 +27,7 @@ voynich-pharmacists-cipher/
 │   ├── functional_categories.json  # Functional categories for Result 4
 │   └── solvent_families.json       # Solvent families for Result 6
 ├── requirements.txt                # No third-party dependencies
+├── ERRATA.md                       # Known errors in the published preprint
 └── README.md
 ```
 
@@ -94,10 +95,10 @@ drift (ratio C/H between 0.97 and 1.03).
 
 Counts occurrences of `sedy` and `shedy` in the Takahashi transcription.
 
-**Key check:** `sedy = 0`, `shedy ≈ 299–425`.
-The s- prefix (excluding sh-) takes nominal suffixes at 108× the rate it
-takes processual suffixes; sh- takes processual suffixes at 3.8× the rate
-it takes nominal suffixes.
+**Key check:** `sedy = 0`, `shedy = 424`.
+s- carries processual suffixes at 7.4% vs sh- at 33.7% (ratio sh/s = 4.6×);
+s- carries nominal suffixes at 36.5% vs sh- at 10.5% (ratio sh/s = 0.29×).
+The suffix distribution is inverted between the two prefix families.
 
 **Note:** `sh` is a unitary glyph (bench character), not a sequence of `s` + `h`.
 The morphological gap between s- and sh- reflects two distinct graphemic
@@ -108,16 +109,18 @@ classes, not a compositional difference.
 Checks whether first-tokens of Pharma lines appear in Stars vocabulary,
 and vice versa.
 
-**Key check:** Pharma→Stars links >> 0; Stars→Pharma links = 0.
-86.7 % of linked tokens appear at position 0 in Stars lines (line-initial).
+**Key check:** Pharma→Stars = 26 occurrences (7 of 32 types);
+Stars→Pharma = 0. 86.7% of linked tokens appear at position 0 in Stars
+lines (line-initial).
 
 ### Result 4 — Positional ordering constraint (`04_positional_constraint.py`)
 
 Classifies tokens in procedural sections into OPER / VEIC / MAT / COMPL
 and tests pairwise ordering.
 
-**Key check:** COMPL tokens are in the final 20 % of lines > 60 % of the
-time. OPER and VEIC tend to precede MAT; MAT tends to precede COMPL.
+**Key check:** COMPL mean normalised position = 0.819. COMPL tokens are in
+the final 20% of lines 68.2% of the time (Z = 26.6). OPER and VEIC tend
+to precede MAT; MAT tends to precede COMPL.
 
 ### Result 5 — Section morphological profiles (`05_section_profiles.py`)
 
@@ -125,8 +128,9 @@ Reports prefix densities across the six major sections and enrichment ratios
 vs corpus baseline.
 
 **Key checks:**
-- Stars: `l-` enriched ~3.4×; `-edy` enriched ~1.5×; `qok-/qot-` present
-- Zodiac: `ot-` enriched ~2.4×; `qok-/qot-` depleted ~0.16×
+- Stars: `l-` enriched 1.97× vs corpus baseline (73.2‰ vs 37.1‰)
+- Stars: `-edy` enriched ~1.5×; `qok-/qot-` present
+- Zodiac: `ot-` enriched ~2.43×; `qok-/qot-` depleted ~0.16×
 - Balneo: `ch-/sh-` near-parity (ch/sh ≈ 1.07)
 
 ### Result 6 — Volume hierarchy (`06_volume_hierarchy.py`)
@@ -134,13 +138,14 @@ vs corpus baseline.
 Computes the ee-suffix frequency for five solvent families and tests whether
 the rank matches the expected volume rank.
 
-**Key check:** Spearman ρ should be high (≥ 0.90) with p < 0.05 (exact
-permutation test, n=5, 120 permutations).
+**Key check:** Spearman ρ = 0.900, p = 0.042 (exact permutation test,
+one-tailed, n=5, 120 permutations).
 Expected rank: WATER > OIL ≈ SPIRIT > VINEGAR > MEDICINE.
 
 **Note:** The ee-suffix profile is concentrated in ok-/ot- (water/oil) families.
 The volume hierarchy holds as a statistical correlation across all five families,
 but the morphological mechanism is specific to the aqueous/oily context.
+See [ERRATA.md](ERRATA.md) for a correction to the two-tailed p-value.
 
 ---
 
@@ -150,6 +155,12 @@ All prefix and suffix counts use **standalone word-boundary matching**:
 tokens are the dot-delimited units of the IVTFF line. Substring matching is
 never used. The helper `starts_with(token, prefix, exclude)` in
 `00_corpus_utils.py` enforces this by operating on full tokens only.
+
+---
+
+## Errata
+
+See [ERRATA.md](ERRATA.md) for known errors in the published preprint.
 
 ---
 
@@ -176,18 +187,3 @@ Commons licence. The corpus transcription files have their own terms of use
   url    = {https://github.com/alessandroplaca-uro/voynich-pharmacists-cipher}
 }
 ```
-
----
-
-## Companion Report
-
-The companion report extends the statistical foundation of Paper I with the full morphological framework, visual-textual convergence analyses, 17 botanical identifications, and 39 testable predictions:
-
-> Placa, A. (2026). *The Pharmacist's Cipher — Companion Report: A Morphological
-> Framework, Visual-Textual Convergences, and Testable Predictions for MS 408*.
-> [companion_paper.tex](companion_paper.tex)
-
-The companion paper is included in this repository as a LaTeX source file. It is
-a working document that is updated as the research progresses. The predictions
-(P1–P39) are tiered by epistemic strength and each carries an explicit
-falsification criterion.
