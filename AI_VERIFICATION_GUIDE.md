@@ -1,6 +1,6 @@
 # AI Verification Guide — Placa (2026)
 
-**Version 1.2 — 2026-03-25**
+**Version 1.3 — 2026-03-25**
 
 This guide provides structured prompts for AI-assisted replication of the six
 morphological results reported in:
@@ -65,7 +65,7 @@ sections: Herbal_A, Balneo, Pharma, Zodiac, Stars.
 ### Expected ranges
 
 | Prefix | Ratio C/H |
-|--------|-----------|
+|--------|-----------:|
 | ch-    | 0.97–1.03 |
 | sh-    | 0.97–1.03 |
 | da-    | ~1.00     |
@@ -205,7 +205,7 @@ Report:
 ### Interpretation
 
 Completion markers cluster at the end of lines (consistent with a
-phrasing-final role), while operational and vehicle tokens tend to precede
+phrasingfinal role), while operational and vehicle tokens tend to precede
 material tokens. The ordering is probabilistic, not absolute, consistent
 with agglutinative syntax allowing some flexibility.
 
@@ -233,7 +233,7 @@ for: l-, -edy, qok-, ot-.
 ### Expected key checks
 
 | Section | Marker       | Expected enrichment |
-|---------|--------------|---------------------|
+|---------|--------------|--------------------:|
 | Stars   | l-           | ~3.4×               |
 | Stars   | -edy         | ~1.5×               |
 | Zodiac  | ot-          | ~2.4×               |
@@ -321,6 +321,51 @@ If your numbers differ from the expected ranges above:
 - [ ] **Encoding**: did you open the corpus with `encoding='latin-1'`?
 - [ ] **Section boundaries**: folio numbers use the ranges in
   `data/folio_section_mapping.csv`. Folio f74 is absent from the manuscript.
+
+---
+
+## Supplementary: The -y Imperative and the -yy Ritual Marker
+
+### Key finding (session 69)
+
+The imperative suffix `-y` has no competing "mix" or "stir" morpheme in the
+system. In pharmaceutical recipe context, `process!` pragmatically realizes as
+`mix/incorporate` — the default action when combining ingredients with solvents.
+
+The doubled form `-yy` is **not** a productive morpheme:
+
+- Only **3 tokens** in the entire corpus (37,036 tokens) end in `-yy`
+- Ratio single `-y` to doubled `-yy`: **4,901:1**
+- 2 of 3 `-yy` tokens appear on f86v4 (the meta-document):
+  - `shyy` (line 3): cold-process + doubled imperative
+  - `yy` (final token of the circular text): ritual closure seal
+- The third: `ytchodyy` (Pharma section)
+
+The terminal `yy` of f86v4 functions as a **performative seal** closing the
+mnemonic song — the pharmaceutical equivalent of "amen" or "so be it", carrying
+the pragmatic force of "mix! mix!" in context.
+
+### Verification prompt
+
+```
+Using the Takahashi transcription, count all tokens that end in exactly
+two consecutive 'y' characters (yy) at the end of the token, but NOT
+tokens ending in a single 'y'.
+
+Report:
+1. Total distinct token types ending in -yy
+2. Total occurrences
+3. For each -yy token: the full token, its folio, line number, and position
+4. The ratio of tokens ending in single -y (but NOT -yy) to those ending in -yy
+5. For f86v4 specifically: list ALL tokens and mark where -yy tokens appear
+```
+
+### Expected values
+
+- Distinct -yy types: **3**
+- Total -yy occurrences: **3**
+- Ratio -y : -yy = **~4,901:1**
+- f86v4 tokens: `shyy` at line 3, `yy` as **final token** of line 9
 
 ---
 
