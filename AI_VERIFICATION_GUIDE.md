@@ -1,6 +1,6 @@
 # AI Verification Guide — Placa (2026)
 
-**Version 1.3 — 2026-03-25**
+**Version 1.4 — 2026-03-26**
 
 This guide provides structured prompts for AI-assisted replication of the six
 morphological results reported in:
@@ -159,20 +159,27 @@ Using the Takahashi transcription:
 
 ### Expected ranges (from paper Table 3)
 
-- A (Pharma → Stars): **26 occurrences** (7 of 32 distinct folio identifiers)
+- A (Pharma → Stars): **26–27 occurrences** (7 of 32 distinct folio identifiers)
 - B (Stars → Pharma): **0**
-- Asymmetry ratio A/B: **infinite** (26 vs 0)
-- Line-initial rate of A tokens in Stars: **~86.7%**
+- Asymmetry ratio A/B: **infinite** (26–27 vs 0)
+- Line-initial rate of A tokens in Stars: **~59%** (16 of 27)
 
 Note: Pharma has 32 folio identifiers (not 16) because some folios have
 multiple sub-pages (recto + verso, or sub-folios like f90v1/f90v2).
 
+**⚠️ Errata note (v1.4):** Previous versions of this guide reported the
+line-initial rate as ~86.7%. Independent replication on IT2a-n.txt
+(2026-03-26) consistently yields ~59% (16/27). The core asymmetry
+(26–27 vs 0) is unaffected. See [ERRATA.md](ERRATA.md) E2.
+
 ### Interpretation
 
-The asymmetry shows that Stars reuses Pharma identifiers as line openers
-(cross-references), while Pharma does not reuse Stars identifiers. This
-suggests a directional dependency: Stars draws on Pharma as a source
-section, not vice versa.
+The asymmetry shows that Stars reuses Pharma identifiers, while Pharma
+does not reuse Stars identifiers. A majority (~59%) of these reused tokens
+appear at position 0 (line-initial), suggesting a tendency toward
+cross-referencing at line boundaries, though not as dominant as previously
+stated. This is compatible with a functional dependency in which Stars
+draws on Pharma as a source section, not vice versa.
 
 ---
 
@@ -241,6 +248,10 @@ Also compute the ch/sh ratio (raw counts) per section.
 
 Then compute enrichment ratios (section density / corpus-wide baseline)
 for: l-, -edy, qok-, ot-.
+
+IMPORTANT: Section assignment uses folio number ranges from
+data/folio_section_mapping.csv, NOT the $I/$L metadata flags in the
+IVTFF file. Using $I/$L flags will produce divergent enrichment values.
 ```
 
 ### Expected key checks (from paper Table 5)
@@ -338,6 +349,8 @@ If your numbers differ from the expected ranges above:
 - [ ] **Encoding**: did you open the corpus with `encoding='latin-1'`?
 - [ ] **Section boundaries**: folio numbers use the ranges in
   `data/folio_section_mapping.csv`. Folio f74 is absent from the manuscript.
+  Do NOT use the $I/$L metadata flags from the IVTFF file — they do not
+  always match the folio-range-based sections used in the paper.
 
 ---
 
