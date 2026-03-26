@@ -4,7 +4,11 @@ Replication scripts for:
 
 > Placa, A. (2026). *The Pharmacist's Cipher: Six Statistical Tests Supporting
 > a Pharmaceutical Reading of the Voynich Manuscript (MS 408)*.
-> Preprint v1.1. https://doi.org/10.5281/zenodo.19197846
+> Preprint v1.2. https://doi.org/10.5281/zenodo.19197846
+
+**Companion Report:**
+> Placa, A. (2026b). *The Pharmacist's Cipher — Companion Report: A Morphological Framework, Visual-Textual Convergences, and Testable Predictions for MS 408*.
+> https://doi.org/10.5281/zenodo.19228231
 
 ---
 
@@ -17,6 +21,7 @@ voynich-pharmacists-cipher/
 │   ├── 01_cross_transcriber.py     # Result 1 – Cross-transcriber stability
 │   ├── 02_paradigm_gap.py          # Result 2 – Binary morphological gap
 │   ├── 03_asymmetric_reuse.py      # Result 3 – Asymmetric cross-section reuse
+│   ├── 03b_asymmetric_reuse_permutation.py  # R3 permutation test (p = 0.0002)
 │   ├── 04_positional_constraint.py # Result 4 – Positional ordering constraint
 │   ├── 05_section_profiles.py      # Result 5 – Section morphological profiles
 │   ├── 06_volume_hierarchy.py      # Result 6 – ee-frequency volume hierarchy
@@ -26,6 +31,8 @@ voynich-pharmacists-cipher/
 │   ├── prefix_definitions.json     # Prefix families and exclusion rules
 │   ├── functional_categories.json  # Functional categories for Result 4
 │   └── solvent_families.json       # Solvent families for Result 6
+├── Placa_2026_Pharmacists_Cipher_v1.1.pdf   # Preprint v1.1 (archived)
+├── Placa_2026_Pharmacists_Cipher_v1.2.pdf   # Preprint v1.2 (current)
 ├── requirements.txt                # No third-party dependencies
 ├── ERRATA.md                       # Known errors in the published preprint
 └── README.md
@@ -106,12 +113,20 @@ classes, not a compositional difference.
 
 ### Result 3 — Asymmetric cross-section reuse (`03_asymmetric_reuse.py`)
 
-Checks whether first-tokens of Pharma lines appear in Stars vocabulary,
+Checks whether first-tokens of Pharma folios appear in Stars vocabulary,
 and vice versa.
 
 **Key check:** Pharma→Stars = 26 occurrences (7 of 32 types);
-Stars→Pharma = 0. 86.7% of linked tokens appear at position 0 in Stars
-lines (line-initial).
+Stars→Pharma = 0. ~59% of linked tokens appear at position 0 in Stars
+lines (line-initial). See ERRATA.md E2 for correction from earlier 86.7% figure.
+
+**Sub-folio rule:** Each recto/verso page and sub-folio designation
+(e.g. f90v1, f90v2) is counted as a distinct unit. Pharma yields 32 folio
+identifiers; Stars yields 23.
+
+**Permutation test:** `scripts/03b_asymmetric_reuse_permutation.py` runs a
+folio-label shuffle test (100,000 iterations, seed 42). Result: p = 0.0002
+one-tailed for an asymmetry ≥ observed.
 
 ### Result 4 — Positional ordering constraint (`04_positional_constraint.py`)
 
@@ -121,6 +136,9 @@ and tests pairwise ordering.
 **Key check:** COMPL mean normalised position = 0.819. COMPL tokens are in
 the final 20% of lines 68.2% of the time (Z = 26.6). OPER and VEIC tend
 to precede MAT; MAT tends to precede COMPL.
+
+**Priority rule:** When a token satisfies both MAT and COMPL criteria (e.g.
+`dam`), COMPL takes precedence.
 
 ### Result 5 — Section morphological profiles (`05_section_profiles.py`)
 
@@ -133,19 +151,22 @@ vs corpus baseline.
 - Zodiac: `ot-` enriched ~2.43×; `qok-/qot-` depleted ~0.16×
 - Balneo: `ch-/sh-` near-parity (ch/sh ≈ 1.07)
 
+**Important:** Section assignment uses folio number ranges from
+`data/folio_section_mapping.csv`, **not** the `$I`/`$L` metadata flags in
+the IVTFF file. Using the flags will produce incorrect section profiles.
+
 ### Result 6 — Volume hierarchy (`06_volume_hierarchy.py`)
 
 Computes the ee-suffix frequency for five solvent families and tests whether
 the rank matches the expected volume rank.
 
 **Key check:** Spearman ρ = 0.900, p = 0.042 (exact permutation test,
-one-tailed, n=5, 120 permutations).
-Expected rank: WATER > OIL ≈ SPIRIT > VINEGAR > MEDICINE.
+one-tailed, n=5, 120 permutations). One rank swap between oil and spirit
+(observed: WATER > SPIRIT > OIL > VINEGAR > MEDICINE;
+expected: WATER > OIL > SPIRIT > VINEGAR > MEDICINE).
 
-**Note:** The ee-suffix profile is concentrated in ok-/ot- (water/oil) families.
-The volume hierarchy holds as a statistical correlation across all five families,
-but the morphological mechanism is specific to the aqueous/oily context.
-See [ERRATA.md](ERRATA.md) for a correction to the two-tailed p-value.
+**Note:** The two-tailed p = 0.083, which does not reach the 0.05 threshold.
+See [ERRATA.md](ERRATA.md) E1 for the correction from the earlier 0.050 figure.
 
 ---
 
@@ -182,8 +203,18 @@ Commons licence. The corpus transcription files have their own terms of use
   title  = {The Pharmacist's Cipher: Six Statistical Tests Supporting
             a Pharmaceutical Reading of the Voynich Manuscript ({MS} 408)},
   year   = {2026},
-  note   = {Preprint v1.1. \doi{10.5281/zenodo.19197846}},
+  note   = {Preprint v1.2. \doi{10.5281/zenodo.19197846}},
   doi    = {10.5281/zenodo.19197846},
   url    = {https://github.com/alessandroplaca-uro/voynich-pharmacists-cipher}
+}
+
+@unpublished{Placa2026b,
+  author = {Placa, Alessandro},
+  title  = {The Pharmacist's Cipher --- Companion Report: A Morphological
+            Framework, Visual-Textual Convergences, and Testable Predictions
+            for {MS} 408},
+  year   = {2026},
+  note   = {Preprint. \doi{10.5281/zenodo.19228231}},
+  doi    = {10.5281/zenodo.19228231}
 }
 ```
