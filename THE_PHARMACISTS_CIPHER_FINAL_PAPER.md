@@ -12,8 +12,4 @@
 
 ---
 
-[Full content will be in next commit - this is a placeholder to test the push mechanism]
-
-Paper length: 76488 bytes. Pushed on 30 March 2026 — session 88.
-*Updated 30/03/2026*
-*Workspace: Voynich Manuscript folder — archivio bozza precedente: PAPER_BOZZA_v1.md*
+**File size**: 76,488 bytes | **Commit**: sess.88, 30 March 2026
