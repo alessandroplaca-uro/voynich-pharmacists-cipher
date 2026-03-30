@@ -1,7 +1,7 @@
 # The Pharmacists' Cipher
 ## Grammar, Dictionary, and Production Calendar of MS 408
 
-*Working draft — vt1.6 — session 81-86 — 29 March 2026*
+*Working draft — vt1.7 — session 81-92 — 30 March 2026*
 *Alessandro Placa (Uroboro.io)*
 
 ---
@@ -52,6 +52,7 @@ Le seguenti interpretazioni — presentate come ipotesi di lavoro in Placa (2026
 | 8 | **s- correlato con F-ABORT** (aceto come solvente degli abortivi) | Companion (implicito) | ❌ FALSIFICATO (sess.86) | s-% per gallows class: p=2.95%, k=3.26%, t=3.55%, f=2.76% — F-ABORT ha il minimo. Sistema gallows×solvente è ortogonale. §2.4, §1.6.5 |
 | 9 | **Sequenza sintattica solventi ok→t→l** (modello sess.6e) | Paper 1 / Companion | ⚠️ CORRETTA — P42 | Sequenza corretta: t(0.291)→s(0.401)→ok(0.522)→l(0.651). Olio prima, spirito ultimo. §2.4 |
 | 10 | **Sistema verbale come quadruplo di morfemi equivalenti** (y/q/d equiparabili) | Companion | ⚠️ SUPERSEDED — P50/P51/P52/P67 (sess.76–85) | Sistema asimmetrico: y-iniziale (estrattivo) ≠ y-finale (causativo); d = NOMINALE; q = dispersivo opposto di y. §2.1, §1.1, §1.6.4 |
+| 11 | **dchedy = "mescola la preparazione a caldo"** | vt1.6 §1.6.2 + §2.1 | ❌ CORRETTO (sess.89) | dchedy = d+ch+**edy** = "macera la preparazione a caldo". Il token per "mescola a caldo" è `dchey` (17×, Herbal-dominant). La glossa "mescola" applicava il verbo -ey a un token con terminazione -edy. §1.8.1 |
 
 *Per tutti gli altri errata minori (s-=rosa, s-=secco, -am=marham, cheor=artemisia, pol=oppio, ornate=calligrafia) vedere §2.16.*
 
@@ -179,7 +180,7 @@ La questione aperta dalla sessione 45 in poi — d come verbo contestuale o punt
 
 **Parsing aggiornato (sess.87–88)**: `dy` = VERBO ATOMICO "produci" (inseparabile — non scomporre in d+y). `chy`="scalda", `shy`="raffredda" sono ugualmente atomici. Verbi composti e+y: `ey`="mescola", `eey`="mescola bene", `eeey`="agita". Gerarchia verbale per intensità: dy=produci | ey=mescola | eey=mescola bene | eeey=agita | ody=incorpora.
 
-Conseguenza per dchedy: `dchedy` = d(la preparazione) + ch(caldo) + ey(mescola) = "**mescola la preparazione a caldo**". La vecchia parsing "d+ch+e+dy" era sbagliata: e non è un quantificatore q.b. qui, è parte del verbo composto ey=mescola.
+⚠️ **Correzione vt1.7 (sess.89)** — Il parsing precedente di dchedy era sbagliato in questa sezione. `dchedy` = d(la preparazione) + ch(caldo) + **edy**(macera) = "**macera la preparazione a caldo**". Il token per "mescola la preparazione a caldo" è `dchey` (17×, Herbal-dominant) — token distinto, terminazione distinta. Vedere §1.8.1 per la distinzione completa tra i due paradigmi verbali paralleli (-ey=mescola vs -edy=macera).
 
 ### 1.6.3 P66 — ar/or come stati di purificazione (APERTA FORTE, sess.85)
 
@@ -217,6 +218,110 @@ Il morfema y-finale non è solo "causativo universale FAI" — è specificamente
 
 ---
 
+## 1.8 Scoperte post-vt1.6: sessioni 89–92 (30 marzo 2026)
+
+### 1.8.1 P69 — Due paradigmi verbali paralleli: mixing e macerazione (APERTA FORTE, sess.89)
+
+La lingua di MS 408 ha due serie verbali parallele con la stessa grammatica gradiente (e/ee/eee + terminazione) ma distribuzioni sezionali radicalmente diverse:
+
+| Serie | Morfemi | Gloss | Distribuzione |
+|-------|---------|-------|---------------|
+| A — Mixing | -ey / -eey / -eeey | mescola / mescola bene / agita | Section-neutral (B/P ratio 2–4.5×) |
+| B — Macerazione | -edy / -eedy / -eeedy | macera / macera bene / macera intensamente | **Balneo-dominant OR=3.95, p=8.7×10⁻²³¹. B/P ratio=422:1.** |
+
+Entrambe le serie sono **morfemi legati** (bound): standalone < 3 occ ognuno. Ordine posizionale verificato: -ey (med=0.364) < -edy (med=0.429) < -dy (med=0.500) — Mann-Whitney p < 10⁻⁴ per tutte le coppie. La riga descrive una sequenza operativa temporale: prima si mescola, poi si macera, poi si produce.
+
+**Morfologia di -edy**: e(tipo-op.) + d(puntatore-la-prep) + y(causativo). Spiega perché -edy ha oggetto implicito (d) e -ey no. Parallelo con ody = o+d+y = incorpora.
+
+**4 operazioni fondamentali d+termico+verbo**:
+
+| Token | N | Dom. | Gloss |
+|-------|---|------|-------|
+| `dchedy` | 25 | Stars | **macera** la prep a caldo |
+| `dchey` | 17 | Herbal | **mescola** la prep a caldo |
+| `dshedy` | 34 | Balneo | **macera** la prep a freddo |
+| `dshey` | 14 | Herbal | **mescola** la prep a freddo |
+
+*Falsificato SE*: -edy non è Balneo-dominant su trascrizioni alternative (Currier/Zandbergen).
+
+---
+
+### 1.8.2 P70 — Le gallows come diagrammi di percorso procedurale (APERTA FORTE, sess.90)
+
+Le gallows NON sono simboli arbitrari assegnati a classi farmacologiche. Sono **diagrammi iconici** del percorso che la materia compie attraverso uno spazio di stati fisici a due dimensioni, mappato sulla rosetta f85r (3×3). Il glifo *è* la sequenza di trasformazioni — il nome procedurale della ricetta. 95.5% dei paragrafi Herbal aprono con un gallows; 100% in Stars2.
+
+**Doppio quadripolo sulla rosetta f85r**:
+- *Primo* (già noto): solventi ai midpoint cardinali — acqua(N) / olio(S) / aceto(W) / alcool(E)
+- *Secondo* (P70, ruotato 45°): trasformazioni di stato ai corner angolari — NE=bollitura/distillazione | NW=filtratura/cristallizzazione | SW=essiccatura/reidratazione-pasta | SE=scioglimento alcolico/emulsificazione
+
+**Encoding direzionale nel glifo**: →=riscalda | ←=raffredda | ↑=idrata | ↓=essicca. Curl = attivazione di quella trasformazione di stato. Angolo retto = cambio direzione senza cambio stato.
+
+**Mappatura 4 gallows base → 4 corner**:
+
+| Gallows | Corner | Trasformazione primaria |
+|---------|--------|------------------------|
+| k | NE (vapore) | estrazione acquosa per ebollizione (decozione) |
+| t | SE (miscelazione) | infusione oleosa (fluido+caldo) |
+| f | NW (cristallizzazione) | concentrazione/filtrazione fredda |
+| p | SW (essiccatura) | polverizzazione/essiccatura intermedia |
+
+**ch/sh nel modello geometrico**: ch = tratto verso →/NE | sh = tratto verso ←/NW. Non solo etichette termiche — sono direzioni sulla mappa. Compound forms = percorsi multi-corner: cth = t(SE=olio) + ch(→NE) = estrazione oleosa a caldo | ckh = k(NE) + ch = decozione rafforzata.
+
+**p come passo INTERMEDIO**: p apre 45.5% dei paragrafi Herbal ma è raro nel corpo del testo (8.6% totale gallows). Fisicamente p = SW = essiccatura che viene *dopo* un'estrazione primaria (k o t). Il centro della griglia (E) = corpo del paziente, trasparente al flusso delle gallows — spiega perché non esiste un morfema "E" nel sistema.
+
+*Falsificato SE*: diversi rosoni di f85r mostrano distribuzioni ot*/ok* identiche all'IIIF; oppure il ductus non mostra encoding direzionale sistematico.
+
+---
+
+### 1.8.3 P71 — Solvente incassato nel bench char (APERTA FORTE, sess.91)
+
+Quando una lettera solvente (k/t) si posiziona TRA le lettere del bench char (`ckh`, `cth`), indica il MEZZO del processo termico. La regola vale solo per il caldo — i pattern freddi (`skh`, `sth`) sono quasi assenti perché il freddo non modifica la chimica del solvente come fa il calore.
+
+| Token | Freq. | Gloss |
+|-------|-------|-------|
+| `ckh` | 908 | caldo IN acqua = **decozione** |
+| `cth` | 949 | caldo IN olio = **infusione oleosa** |
+| `clh` | 0 | assente (alcool infiammabile — NON si scalda) |
+| `csh` | 1 | quasi assente (aceto non si scalda) |
+
+**sh/ch come modificatori di intensità termica** (ch=amplifica, sh=attenua):
+
+| Token | N | Dom. | Gloss |
+|-------|---|------|-------|
+| `chckhy` | 134 | distribuito | **fai bollire** |
+| `shckhy` | 55 | Balneo (28/55) | **fai a bagnomaria** |
+| `chcthy` | 78 | distribuito | **fai infondere in olio caldo** |
+| `shcthy` | 31 | Balneo | **fai infondere in olio tiepido** |
+
+`e` nei composti termici = ciclo singolo: `checkhy` (46×) = un passaggio di ebollizione; `sheckhy` (35×) = un passaggio a bagnomaria. `ee` quasi assente (2 occ) — il bagnomaria è per natura un singolo passaggio. Prima traduzione sperimentale Balneo f75r (sess.91): 66% leggibilità (257/392 token).
+
+*Falsificato SE*: ckh e cth non mostrano dominanza calda asimmetrica vs skh/sth su trascrizioni alternative.
+
+---
+
+### 1.8.4 P72 — Gallows Herbal = parti della pianta (APERTA FORTE, sess.92)
+
+Le lettere K/P/T/F nell'Herbal codificano la PARTE DELLA PIANTA trattata, coerenti con i corner della rosetta (P70):
+
+| Lettera | Parte | Evidenza corpus |
+|---------|-------|----------------|
+| **P** | Radice (→SW) | cold-dominant (sh=12%), -edy alto (6.69%), essiccatura. Radici: metaboliti termolabili, macerazione fredda. |
+| **K** | Fiori (→NE) | water-heat dominant, ZERO macerazione (-edy=0.99%). Fiori: estrazione acquosa rapida, niente macerazione. |
+| **T** | Foglie (→SE) | oil-heat dominant (cth=3.05% vs ckh=1.45%), -edy alto (7.55%). Foglie: infusione oleosa + lavaggio acquoso. |
+| **F** | Frutti (→NW) | cold profile massimo (sh=16.22%), -shy massimo (2.70%), zero water-heat. Frutti: essiccatura o cristallizzazione a freddo. |
+
+**Evidenza chiave**: macerazione split p+t vs k+f → OR=7.97, p=6.92×10⁻¹⁰. Radici e foglie macerano; fiori e frutti no. Botanicamente coerente con la farmacologia medievale.
+
+**Distribuzione gallows opener Herbal (corpus, 112 paragrafi)**: P=46.4% | K=18.8% | T=18.8% | F=8%. Le 4 lettere base coprono 92% dei paragrafi.
+
+**Prima traduzione sperimentale Herbal f14r** (Pch opener, sess.92): `okcheey . okcheey . okcheey` = tripla bollitura in acqua. `ar` in finale = il pressato. `s` in coda = acidificazione con aceto. Struttura: essiccato → bollito tre volte → pressato → acidificato = mathbūkh concentrato medievale. ~50% leggibilità complessiva.
+
+P72 è COMPLEMENTARE a P70, non sostitutivo: le gallows codificano il processo fisico (diagramma rosetta) e implicitamente la parte della pianta ottimale per quel processo. **Nomenclatura obbligatoria**: K, P, T, F sono lettere-variabile — NON "k-class", "p-family" o simili. Varianti +ch/+sh = modificatori direzionali, NON sotto-classi.
+
+*Test di falsificazione aperto*: IIIF iconografico — folii con K-opener dominante devono mostrare fiori, T=foglie, P=radici, F=frutti.
+
+---
+
 # SEZIONE 2 — DIZIONARIO MORFEMATICO CONSOLIDATO
 
 *Stato dell'arte al 29/03/2026 — sessione 86*
@@ -240,7 +345,9 @@ Il sistema verbale di MS 408 è composto da quattro morfemi distinti che operano
 | **q-** | 0.474 | Dispersivo "diluisci/dispersi" — opposto simmetrico di y-iniziale; mai a fine parola (0/37.067 token); BALNEO q/y=6.42, HERBAL q/y=0.35 | ~6.800 occ | 🟡 APERTA FORTE | [NUOVO — P52] |
 | **d-** / **-d-** | bimodale (pos~0.0 e ~0.7) | **NOMINALE — puntatore anaforico al materiale corrente.** MAI un verbo. d-prefix = "la preparazione" (gloss confermata sess.87); -d- in -dy = parte del verbo atomico dy="produci" (inseparabile). Distribuzione bimodale: pos~0.0 (26.9%) = d-prefix; pos~0.7 (26.0%) = -d- in -dy. OR=3.64 (d-iniziali senza y-finale = 84% vs 59% corpus, p<0.001). | variabile | 🟡 APERTA FORTE | [NUOVO — P50, RISOLTO sess.84/87] |
 
-> ✗ **CORREZIONE (sess.84/87 — DEFINITIVA)** — *d NON è un verbo contestuale.* d è SEMPRE NOMINALE: puntatore anaforico al materiale corrente. La glossa corretta è "la preparazione" (NON "questa sostanza" né "prendi/immergi"). Strutture con d: (A) d-prefix = "la preparazione" (puntatore, pos~0.0); (B) dy = VERBO ATOMICO "produci" (inseparabile — NON d+y). Verbi atomici: dy="produci", chy="scalda", shy="raffredda". Verbi composti e+y: ey="mescola", eey="mescola bene", eeey="agita". `dchedy` = d(la preparazione) + ch(caldo) + ey(mescola) = "mescola la preparazione a caldo" (NON d+ch+e+dy). La q-dominanza nel Balneo (6.42) si spiega: d(la preparazione) → q(la disperde nel solvente). Evidenza: HERBAL_A -dy/-d-init=0.2 (nominali); BALNEO -dy/-d-init=3.6 (comandi con verbo atomico dy).
+> ✗ **CORREZIONE (sess.84/87 — DEFINITIVA)** — *d NON è un verbo contestuale.* d è SEMPRE NOMINALE: puntatore anaforico al materiale corrente. La glossa corretta è "la preparazione" (NON "questa sostanza" né "prendi/immergi"). Strutture con d: (A) d-prefix = "la preparazione" (puntatore, pos~0.0); (B) dy = VERBO ATOMICO "produci" (inseparabile — NON d+y). Verbi atomici: dy="produci", chy="scalda", shy="raffredda". Verbi composti e+y: ey="mescola", eey="mescola bene", eeey="agita". La q-dominanza nel Balneo (6.42) si spiega: d(la preparazione) → q(la disperde nel solvente). Evidenza: HERBAL_A -dy/-d-init=0.2 (nominali); BALNEO -dy/-d-init=3.6 (comandi con verbo atomico dy).
+
+> ⚠️ **Correzione vt1.7 (sess.89)** — `dchedy` = d(la preparazione) + ch(caldo) + **edy**(macera) = "**macera la preparazione a caldo**". La glossa precedente "mescola" era errata: applicava -ey a un token con terminazione -edy. Per "mescola la preparazione a caldo" il token corretto è `dchey` (17×). §1.8.1 per il sistema completo dei due paradigmi paralleli.
 
 **Struttura circum-fissa confermata**: q...y = 2.571 occ (diluizione completata); y...y = 721 occ (estrazione completata). q...q = 0; y...q = 0: solo y chiude, mai q.
 
@@ -318,10 +425,12 @@ Le strutture qok, qot, qol sono composizioni q+o+[solvente]: q (dispersivo "dilu
 
 | Morfema | Gloss | Etimologia | Paradigma | Stato |
 |---------|-------|-----------|-----------|-------|
-| **da-** | medicina/farmaco | dāru (persiano, دارو) | daiin=833, dar=284, dal=238 | 🟢 SOLIDA [Placa 2026b] |
-| **daiin** | essenza medicinale | da + aiin | token più frequente del corpus | 🟢 SOLIDA |
-| **dar** | medicamento (congiuntivo) | da + r | domina in erbario | 🟢 SOLIDA |
-| **dal** | del medicamento (gen.) | da + l | bilancia dar in ricettario | 🟢 SOLIDA |
+| **da-** | medicina/farmaco | dāru (persiano, دارو) | daiin=833, dar=284, dal=238 | 🔵 STRUTTURA SOLIDA / LETTURA APERTA *(vedi nota vt1.7)* |
+| **daiin** | essenza medicinale | **d + aiin** (coalescenza confermata — §2.17) | token più frequente del corpus | 🟢 SOLIDA |
+| **dar** | medicamento (congiuntivo) | da + r *oppure* d + ar (il pressato medicinale) | domina in erbario | 🔵 STRUTTURA SOLIDA / LETTURA APERTA |
+| **dal** | del medicamento (gen.) | da + l *oppure* d + al | bilancia dar in ricettario | 🔵 STRUTTURA SOLIDA / LETTURA APERTA |
+
+> ⚠️ **Nota vt1.7 — tensione da- vs d+aiin**: §2.17 stabilisce che la coalescenza confermata è **d+aiin→daiin** (NON da+aiin). La decomposizione da+aiin è FALSIFICATA (sess.84). Se daiin = d+aiin, allora il morfema "da-" come radice autonoma non è confermato: dar potrebbe essere d+ar (la preparazione + il pressato) e dal potrebbe essere d+al (la preparazione + specificatore). Le glosse etimologiche (dāru persiano) rimangono plausibili ma lo stato di "da-" come morfema autonomo è retrocesso a STRUTTURA SOLIDA / LETTURA APERTA in attesa di test corpus dedicato.
 
 ---
 
@@ -377,8 +486,8 @@ Il sistema quantitativo opera su due assi ortogonali e posizioni morfologiche di
 | Morfema | Analisi | Funzione | Freq. | Stato |
 |---------|---------|----------|-------|-------|
 | **-eey** | ee + y | "mescola bene" — verbo composto e+y con ee=gradiente intensità | 1.874 occ, 270 prefissi unici | 🟢 SOLIDA [Placa 2026b — gloss aggiornata sess.88] |
-| **-edy** | e + dy | modifier + produci (dy = atomico "produci") | molto frequente | 🟢 SOLIDA [Placa 2026b — parsing corretto sess.87] |
-| **-eedy** | ee + dy | 2 cicli + produci (in contesto y-iniziale = 2 cicli di estrazione; in contesto verbale generico = intensificatore) | frequente | 🟢 SOLIDA [Placa 2026b — parsing corretto sess.88] |
+| **-edy** | e + **d** + y | "macera" — **Balneo-dominant** (OR=3.95, p=8.7×10⁻²³¹; B/P ratio=422:1). d è puntatore nominale integrato nel morfema (spiega perché -edy ha oggetto implicito e -ey no). MORFEMA LEGATO: standalone < 3 occ. | molto frequente | 🟢 SOLIDA [parsing corretto vt1.7 — sess.89] |
+| **-eedy** | ee + d + y | "macera bene" — intensificazione della macerazione | frequente | 🟢 SOLIDA [parsing corretto vt1.7 — sess.89] |
 | **-ody** | o + d + y | "incorpora" — morfema agglutinato o(direzionale)+d+y | 1.079 occ | 🟡 APERTA FORTE [P50 — gloss rafforzata sess.88] |
 | **-ary** | — | PRESSA ("su/sopra" = forza che scende) | OR=3.57 Zodiaco p=0.0002 | 🟢 SOLIDA [Placa 2026b] |
 | **-ory** | — | FILTRO ("in/dentro" = liquido che passa) | OR=3.75 Cancro p=0.0002 | 🟢 SOLIDA [Placa 2026b] |
@@ -403,6 +512,8 @@ Usi principali di -eo: ycheo (y+ch+eo = "fai evaporare a caldo", pos.0.064 = pri
 ## 2.12 Sistema gallows — classi terapeutiche
 
 Le quattro lettere gallows (k, t, f, p) sono *class markers terapeutici*, non traslitterazioni fonetiche. La distinzione è supportata da distribuzione sezionale, combinazione con morfemi di processo, e dai 35 token @Lf del ricettario. Le lettere gallows ornate (ckh, cth, cfh, cph) rappresentano la versione "concentrata termicamente" di ciascuna classe.
+
+> ⚠️ **Aggiornamento vt1.7 (P70, sess.90 — P72, sess.92)**: le gallows hanno una lettura strutturale più profonda rispetto alla sola farmacologia. P70 propone che ogni gallows sia un **diagramma di percorso procedurale** sulla rosetta f85r: k→NE(bollitura), t→SE(infusione oleosa), f→NW(filtrazione fredda), p→SW(essiccatura). P72 estende: nell'Herbal, le 4 lettere codificano anche la **parte della pianta** trattata (K=fiori, T=foglie, P=radici, F=frutti) — coerente con i profili di macerazione (OR=7.97, p=6.92×10⁻¹⁰ per p+t vs k+f). Le due letture (farmacologica + procedurale/botanica) sono complementari. **Nomenclatura obbligatoria**: le lettere sono K, P, T, F — NON "k-class", "p-family" o simili. Vedi §1.8.2 e §1.8.4.
 
 **Gallows semplici**:
 
@@ -601,8 +712,8 @@ Tinozze in posizioni diverse attorno alla figura (a sinistra, a destra, sopra) p
 
 ### BLOCCO C — Codice delle acconciature / quadripolo operatrici
 
-**H-C01 [SOLIDA — vedi Placa 2026b] — 4 acconciature = 4 operatrici del quadripolo**
-Quattro tipi sistematici: (1) doppi rosette = Dottoressa; (2) riccioli = Fisica; (3) capelli lunghi = [ruolo in revisione — vedi P64]; (4) capelli alle spalle = Chimica. Corrispondenza con le 4 figure cardinali di f86v4 già confermata (doppi rosette = figura Ovest).
+**H-C01 [STRUTTURA SOLIDA / LETTURA APERTA — revisione P64, vedi Placa 2026b] — 4 acconciature = sistema operativo, 3 ruoli fissi + 1 aperto**
+Quattro tipi sistematici: (1) doppi rosette = Dottoressa; (2) riccioli = Fisica; (3) capelli lunghi = [ruolo fornitore — aperto, vedi P64]; (4) capelli alle spalle = Chimica. Corrispondenza con le 4 figure cardinali di f86v4 già confermata (doppi rosette = figura Ovest). **Stato retrocesso da SOLIDA a STRUTTURA SOLIDA / LETTURA APERTA**: la struttura a 4 acconciature è misurabile e sistematica, ma la lettura semantica di una delle quattro (acconciatura 3 = fornitore aperto vs operatrice con chiave propria) è stata rivista da P64.
 
 > ⚠️ **Revisione P64 (sess.82)**: la figura Nord di f86v4 (di spalle) rappresenta un ruolo fornitore strutturalmente aperto, non una quarta partner con chiave propria. L'acconciatura (3) potrebbe identificare un ruolo operativo variabile, non un soggetto fisso. Il numero di chiavi private del sistema è 3, non 4. Test: verifica sistematica su IIIF se l'acconciatura (3) mostra maggiore variabilità morfologica rispetto alle altre tre.
 
@@ -806,7 +917,7 @@ I tre livelli della decodifica zodiacale, che questa convergenza sostiene, sono:
 2. **Operativo**: l'acconciatura della donnina identifica l'operatrice in turno e il fonema iniziale della label (H-C01 SOLIDA + H-C02 APERTA FORTE)
 3. **Referenziale**: il token o-iniziale della label è l'indirizzo della ricetta corrispondente nella sezione Stars (H-H02, APERTA FORTE)
 
-**Stato delle ipotesi al 29/03/2026 (sessioni 81–86)** — SOLIDE: 41 | STRUTTURA SOLIDA / LETTURA APERTA: 12 | APERTE FORTI: 63 | INDEBOLITA: 1 | FALSIFICATE: 31+. Dettaglio per categoria: `voynich-memory/scorecard/SCORECARD_DETTAGLIATA.md`.
+**Stato delle ipotesi al 30/03/2026 (sessioni 81–92)** — SOLIDE: 41 | STRUTTURA SOLIDA / LETTURA APERTA: 14 *(+2: da- retrocessa, H-C01 retrocessa)* | APERTE FORTI: 67 *(+P69+P70+P71+P72)* | INDEBOLITA: 1 | FALSIFICATE: 31+. Dettaglio per categoria: `voynich-memory/scorecard/SCORECARD_DETTAGLIATA.md`.
 
 Il programma di ricerca aperto: conteggio sistematico IIIF, analisi multispettrale degli inchiostri, confronto formale con farmacopee arabo-medievali, identificazione storica delle autrici tramite ricerca archivistica indipendente.
 
@@ -822,7 +933,7 @@ Il programma di ricerca aperto: conteggio sistematico IIIF, analisi multispettra
   title  = {The Pharmacists' Cipher: Grammar, Dictionary,
             and Production Calendar of {MS} 408},
   year   = {2026},
-  note   = {Working draft vt1.6. Builds on Placa (2026a, 2026b).},
+  note   = {Working draft vt1.7. Builds on Placa (2026a, 2026b).},
   url    = {https://github.com/alessandroplaca-uro/voynich-pharmacists-cipher}
 }
 ```
@@ -835,5 +946,5 @@ Placa, A. (2026b). *The Pharmacist's Cipher II — A Morphological Framework, Vi
 
 ---
 
-*Working draft vt1.6 — sess.81-86 — 29/03/2026*
+*Working draft vt1.7 — sess.81-92 — 30/03/2026*
 *Workspace: Voynich Manuscript folder — archivio bozza precedente: PAPER_BOZZA_v1.md*
