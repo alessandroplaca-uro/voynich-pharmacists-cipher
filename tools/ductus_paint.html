@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Ductus Paint</title>
+<style>
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body {
+    background:#111;
+    display:flex; flex-direction:column; align-items:center;
+    gap:10px; padding:16px;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size:13px;
+    color:#bbb;
+  }
+  h2 { color:#c9a96e; font-weight:300; font-size:15px; letter-spacing:3px; margin-top:4px; }
+
+  canvas { cursor:crosshair; border:1px solid #222; touch-action:none; display:block; }
+
+  .row { display:flex; gap:7px; flex-wrap:wrap; justify-content:center; }
+  button {
+    background:#1a1a1a; color:#888;
+    border:1px solid #2a2a2a;
+    padding:5px 13px; cursor:pointer;
+    font-family: inherit; font-size:12px;
+    border-radius:3px; transition:color .15s, border-color .15s;
+  }
+  button:hover { color:#eee; border-color:#555; }
+
+  #recog {
+    width:520px;
+    background:#0d0d0d;
+    border:1px solid #222;
+    border-radius:4px;
+    padding:10px 14px;
+    min-height:44px;
+    display:flex; align-items:center; gap:12px;
+    flex-wrap:wrap;
+  }
+  .recog-label { color:#555; font-size:11px; letter-spacing:1px; white-space:nowrap; }
+  .recog-candidates { display:flex; gap:8px; flex-wrap:wrap; }
+  .cand {
+    display:flex; align-items:center; gap:5px;
+    border:1px solid #2a2a2a; border-radius:3px;
+    padding:4px 10px; font-size:12px;
+  }
+  .cand.top { border-color:#c9a96e; }
+  .cand-name { font-weight:600; font-size:14px; }
+  .cand-sub { color:#666; font-size:11px; }
+  .cand-bar { width:40px; height:3px; background:#222; border-radius:2px; overflow:hidden; }
+  .cand-fill { height:100%; background:#c9a96e; border-radius:2px; }
+  .cand.top .cand-fill { background:#e94560; }
+  #recog-empty { color:#444; font-size:12px; }
+
+  .panels { display:flex; gap:9px; width:520px; }
+  .panel { flex:1; }
+  .plabel { color:#444; font-size:11px; letter-spacing:1px; margin-bottom:4px; }
+  .out {
+    background:#0a0a0a; border:1px solid #1e1e1e;
+    padding:9px; font-family:'Courier New', monospace; font-size:11px;
+    min-height:58px; max-height:140px; overflow-y:auto;
+    white-space:pre; line-height:1.6; border-radius:3px;
+  }
+  #pts-out { color:#3af; }
+  #sem-out { color:#7c7; }
+  .flash { color:#4c4; font-size:11px; display:none; }
+</style>
+</head>
+<body>
+
+<h2>DUCTUS PAINT</h2>
+<canvas id="c" width="520" height="520"></canvas>
+
+<div class="row">
+  <button onclick="undoLast()">&#8617; undo</button>
+  <button onclick="clearAll()">&#10005; clear</button>
+  <button onclick="copyPts()">pts</button>
+  <button onclick="copySem()">morfemi</button>
+  <span id="ok" class="flash">&#10003; copiato</span>
+</div>
+
+<div id="recog">
+  <span class="recog-label">GALLOWS</span>
+  <span id="recog-empty" style="color:#444;font-size:12px">disegna una gallows...</span>
+  <div class="recog-candidates" id="recog-cands" style="display:none"></div>
+</div>
+
+<div class="panels">
+  <div class="panel">
+    <div class="plabel">WAYPOINTS</div>
+    <div class="out" id="pts-out">--</div>
+  </div>
+  <div class="panel">
+    <div class="plabel">DECODIFICA</div>
+    <div class="out" id="sem-out">--</div>
+  </div>
+</div>
+
+<script>
+const cv=document.getElementById('c'),cx=cv.getContext('2d');
+const SZ=520,PAD=88,SP=172;
+const NODES=[
+  {id:'NW',col:0,row:0,gx:0,gy:2,fill:'#e8c84a',label:'NW'},
+  {id:'N', col:1,row:0,gx:1,gy:2,fill:'#4fc3f7',label:'N'},
+  {id:'NE',col:2,row:0,gx:2,gy:2,fill:'#e8c84a',label:'NE'},
+  {id:'W', col:0,row:1,gx:0,gy:1,fill:'#66bb6a',label:'W'},
+  {id:'C', col:1,row:1,gx:1,gy:1,fill:'#383838',label:'C'},
+  {id:'E', col:2,row:1,gx:2,gy:1,fill:'#ab47bc',label:'E'},
+  {id:'SW',col:0,row:2,gx:0,gy:0,fill:'#e8c84a',label:'SW'},
+  {id:'S', col:1,row:2,gx:1,gy:0,fill:'#ff7043',label:'S'},
+  {id:'SE',col:2,row:2,gx:2,gy:0,fill:'#e8c84a',label:'SE'},
+];
+const GALLOWS=[
+  {name:'K',corner:'NE',gx:2,gy:2,gloss:'decozione',color:'#e94560'},
+  {name:'F',corner:'NW',gx:0,gy:2,gloss:'macerazione fredda',color:'#4fc3f7'},
+  {name:'T',corner:'SE',gx:2,gy:0,gloss:'infusione oleosa',color:'#ff9800'},
+  {name:'P',corner:'SW',gx:0,gy:0,gloss:'pressatura',color:'#ab47bc'},
+];
+function cp(col,row){return{x:PAD+col*SP,y:PAD+row*SP};}
+function tc(gx,gy){return{x:PAD+gx*SP,y:PAD+(2-gy)*SP};}
+function gauss(pts,s){
+  const r=Math.ceil(s*2.5),kl=2*r+1,k=[];let ks=0;
+  for(let i=0;i<kl;i++){const w=Math.exp(-((i-r)**2)/(2*s*s));k.push(w);ks+=w;}
+  k.forEach((v,i)=>k[i]=v/ks);
+  return pts.map((_,i)=>{let sx=0,sy=0;for(let j=0;j<kl;j++){const idx=Math.max(0,Math.min(pts.length-1,i-r+j));sx+=pts[idx].x*k[j];sy+=pts[idx].y*k[j];}return{x:sx,y:sy};});
+}
+function dp(pts,eps){
+  if(pts.length<=2)return pts;
+  let mx=0,mi=0;const[a,b]=[pts[0],pts[pts.length-1]];
+  const dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy)||1;
+  for(let i=1;i<pts.length-1;i++){const d=Math.abs(dy*pts[i].x-dx*pts[i].y+b.x*a.y-b.y*a.x)/len;if(d>mx){mx=d;mi=i;}}
+  if(mx>eps)return[...dp(pts.slice(0,mi+1),eps).slice(0,-1),...dp(pts.slice(mi),eps)];
+  return[a,b];
+}
+function wind(pts,ox,oy){
+  let w=0;
+  for(let i=0;i<pts.length-1;i++){const ax=pts[i].x-ox,ay=pts[i].y-oy,bx=pts[i+1].x-ox,by=pts[i+1].y-oy;w+=Math.atan2(ax*by-ay*bx,ax*bx+ay*by);}
+  return w;
+}
+function classify(strokes){
+  const pts=strokes.flat();if(pts.length<4)return[];
+  const cpts=pts.map(p=>tc(p.x,p.y));
+  const sc=GALLOWS.map(g=>{const c=tc(g.gx,g.gy);return{...g,w:Math.abs(wind(cpts,c.x,c.y))};}).filter(g=>g.w>Math.PI*0.4).sort((a,b)=>b.w-a.w);
+  if(!sc.length)return[];
+  const top=sc[0].w;return sc.map(g=>({...g,conf:g.w/top}));
+}
+function semantics(strokes){
+  const pts=strokes.flat();if(pts.length<2)return'--';
+  const cpts=pts.map(p=>tc(p.x,p.y));
+  const visits=[];
+  pts.forEach(p=>{NODES.forEach(n=>{if(Math.hypot(p.x-n.gx,p.y-n.gy)<0.32){if(!visits.length||visits[visits.length-1].id!==n.id)visits.push(n);}});});
+  const loops=[];
+  GALLOWS.forEach(g=>{const c=tc(g.gx,g.gy);const w=wind(cpts,c.x,c.y);if(Math.abs(w)>Math.PI*0.6)loops.push({corner:g.corner,w});});
+  const ax={N:'k=acqua',S:'t=olio',E:'l=alcool',W:'s=aceto'};
+  const lx={NE:'chy=scalda',NW:'shy=raffredda',SE:'l+chy=distilla',SW:'t+shy=pressa'};
+  const lines=[];
+  if(visits.length)lines.push('SEQUENZA: '+visits.map(v=>v.id).join(' -> '));
+  const sv=[...new Set(visits.filter(v=>ax[v.id]).map(v=>ax[v.id]))];
+  if(sv.length)lines.push('SOLVENTI: '+sv.join(' * '));
+  loops.forEach(l=>lines.push('a('+l.corner+'): '+(lx[l.corner]||'?')));
+  const mo=[...new Set([...visits.filter(v=>ax[v.id]).map(v=>ax[v.id].split('=')[0]),...loops.map(l=>lx[l.corner]?.split('=')[0]).filter(Boolean)])];
+  if(mo.length)lines.push('\nMORFEMI: '+mo.join(' + '));
+  return lines.join('\n')||'(nessun nodo)';
+}
+let strokes=[],curRaw=[],drawing=false,emaX=0,emaY=0;
+const EMA=0.22;
+function render(){
+  cx.clearRect(0,0,SZ,SZ);cx.fillStyle='#111';cx.fillRect(0,0,SZ,SZ);
+  cx.strokeStyle='#191919';cx.lineWidth=1;
+  for(let i=0;i<=2;i++){
+    cx.beginPath();cx.moveTo(PAD+i*SP,PAD-32);cx.lineTo(PAD+i*SP,PAD+2*SP+32);cx.stroke();
+    cx.beginPath();cx.moveTo(PAD-32,PAD+i*SP);cx.lineTo(PAD+2*SP+32,PAD+i*SP);cx.stroke();
+  }
+  cx.setLineDash([3,8]);cx.strokeStyle='#161616';
+  for(let i=0;i<2;i++){
+    const mx=PAD+i*SP+SP/2,my=PAD+i*SP+SP/2;
+    cx.beginPath();cx.moveTo(mx,PAD-32);cx.lineTo(mx,PAD+2*SP+32);cx.stroke();
+    cx.beginPath();cx.moveTo(PAD-32,my);cx.lineTo(PAD+2*SP+32,my);cx.stroke();
+  }
+  cx.setLineDash([]);cx.lineCap='round';cx.lineJoin='round';
+  strokes.forEach(s=>{
+    if(s.length<2)return;
+    const pts=s.map(p=>tc(p.x,p.y));
+    cx.beginPath();cx.moveTo(pts[0].x,pts[0].y);pts.forEach(p=>cx.lineTo(p.x,p.y));
+    cx.strokeStyle='#e94560';cx.lineWidth=2.5;cx.stroke();
+    const L=pts[pts.length-1],P2=pts[Math.max(0,pts.length-3)];
+    const ang=Math.atan2(L.y-P2.y,L.x-P2.x);
+    cx.save();cx.translate(L.x,L.y);cx.rotate(ang);
+    cx.beginPath();cx.moveTo(0,0);cx.lineTo(-9,-4);cx.lineTo(-9,4);cx.closePath();
+    cx.fillStyle='#e94560';cx.fill();cx.restore();
+  });
+  if(curRaw.length>1){
+    cx.beginPath();cx.moveTo(curRaw[0].x,curRaw[0].y);curRaw.forEach(p=>cx.lineTo(p.x,p.y));
+    cx.strokeStyle='rgba(233,69,96,0.45)';cx.lineWidth=2;cx.stroke();
+  }
+  const F="'Helvetica Neue',Helvetica,Arial,sans-serif";
+  NODES.forEach(n=>{
+    const p=cp(n.col,n.row);
+    cx.beginPath();cx.arc(p.x,p.y,15,0,Math.PI*2);cx.fillStyle=n.fill;cx.fill();
+    cx.strokeStyle='rgba(0,0,0,0.4)';cx.lineWidth=1.5;cx.stroke();
+    cx.fillStyle='rgba(0,0,0,0.75)';cx.font='bold 9px '+F;cx.textAlign='center';cx.textBaseline='middle';cx.fillText(n.label,p.x,p.y);
+  });
+}
+function updateRecog(){
+  const em=document.getElementById('recog-empty'),ca=document.getElementById('recog-cands');
+  if(!strokes.length){em.style.display='';ca.style.display='none';ca.innerHTML='';return;}
+  const res=classify(strokes);
+  if(!res.length){em.style.display='';em.textContent='nessuna gallows riconosciuta';ca.style.display='none';ca.innerHTML='';return;}
+  em.style.display='none';ca.style.display='flex';ca.innerHTML='';
+  const n=res[0].conf>0.85&&(res.length<2||res[1].conf<0.55)?1:Math.min(res.length,3);
+  res.slice(0,n).forEach((r,i)=>{
+    const pct=Math.round(r.conf*100),div=document.createElement('div');
+    div.className='cand'+(i===0?' top':'');
+    div.innerHTML='<span class="cand-name" style="color:'+(i===0?r.color:'#888')+'">'+r.name+'</span>'
+      +'<span class="cand-sub">'+r.gloss+'</span>'
+      +'<div class="cand-bar"><div class="cand-fill" style="width:'+pct+'%;background:'+(i===0?r.color:'#444')+'"></div></div>'
+      +'<span style="color:#555;font-size:10px">'+pct+'%</span>';
+    ca.appendChild(div);
+  });
+}
+function updateAll(){
+  const pe=document.getElementById('pts-out'),se=document.getElementById('sem-out');
+  if(!strokes.length){pe.textContent='--';se.textContent='--';updateRecog();return;}
+  const all=strokes.flat();
+  pe.textContent='pts = [\n  '+all.map(p=>'('+p.x+', '+p.y+')').join(',\n  ')+'\n]';
+  se.textContent=semantics(strokes);updateRecog();
+}
+function gp(e){const r=cv.getBoundingClientRect(),sc=SZ/r.width,s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*sc,y:(s.clientY-r.top)*sc};}
+cv.addEventListener('mousedown',e=>{drawing=true;const p=gp(e);emaX=p.x;emaY=p.y;curRaw=[{x:emaX,y:emaY}];});
+cv.addEventListener('mousemove',e=>{if(!drawing)return;const p=gp(e);emaX=EMA*p.x+(1-EMA)*emaX;emaY=EMA*p.y+(1-EMA)*emaY;const last=curRaw[curRaw.length-1];if((emaX-last.x)**2+(emaY-last.y)**2>9){curRaw.push({x:emaX,y:emaY});render();}});
+cv.addEventListener('mouseup',fin);cv.addEventListener('mouseleave',fin);
+cv.addEventListener('touchstart',e=>{e.preventDefault();drawing=true;const p=gp(e);emaX=p.x;emaY=p.y;curRaw=[{x:emaX,y:emaY}];});
+cv.addEventListener('touchmove',e=>{e.preventDefault();if(!drawing)return;const p=gp(e);emaX=EMA*p.x+(1-EMA)*emaX;emaY=EMA*p.y+(1-EMA)*emaY;curRaw.push({x:emaX,y:emaY});render();});
+cv.addEventListener('touchend',e=>{e.preventDefault();fin();});
+function fin(){
+  if(!drawing||curRaw.length<4){drawing=false;curRaw=[];return;}drawing=false;
+  const si=dp(gauss(curRaw,10),9);
+  strokes.push(si.map(p=>({x:Math.round(((p.x-PAD)/SP)*100)/100,y:Math.round((2-(p.y-PAD)/SP)*100)/100})));
+  curRaw=[];updateAll();render();
+}
+function clearAll(){strokes=[];curRaw=[];drawing=false;updateAll();render();}
+function undoLast(){if(strokes.length){strokes.pop();updateAll();render();}}
+function flash(){const el=document.getElementById('ok');el.style.display='inline';setTimeout(()=>el.style.display='none',1400);}
+function copyPts(){navigator.clipboard.writeText(document.getElementById('pts-out').textContent).then(flash).catch(()=>{});}
+function copySem(){navigator.clipboard.writeText(document.getElementById('sem-out').textContent).then(flash).catch(()=>{});}
+render();
+</script>
+</body>
+</html>
