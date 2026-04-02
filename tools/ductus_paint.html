@@ -2,7 +2,7 @@
 <html lang="it">
 <head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Ductus Paint v2</title>
+<title>Ductus Paint v2.2</title>
 <style>
   * { box-sizing:border-box; margin:0; padding:0; }
   body {
@@ -14,13 +14,17 @@
   }
   h2 { color:#c9a96e; font-weight:300; font-size:15px; letter-spacing:3px; margin-top:4px; }
   canvas { cursor:crosshair; border:1px solid #1e1e1e; touch-action:none; display:block; max-width:100%; }
-  .row { display:flex; gap:7px; flex-wrap:wrap; justify-content:center; }
+  .row { display:flex; gap:9px; flex-wrap:wrap; justify-content:center; }
   button {
     background:#1a1a1a; color:#888; border:1px solid #2a2a2a;
-    padding:5px 13px; cursor:pointer; font-family:inherit; font-size:12px;
-    border-radius:3px; transition:color .15s,border-color .15s;
+    padding:8px 18px; cursor:pointer; font-family:inherit; font-size:13px;
+    border-radius:4px; transition:color .15s,border-color .15s;
   }
   button:hover { color:#eee; border-color:#555; }
+  button.sm {
+    padding:3px 9px; font-size:11px; color:#555; border-color:#222;
+  }
+  button.sm:hover { color:#bbb; border-color:#444; }
   #status {
     width:520px; max-width:100%;
     background:#0d0d0d; border:1px solid #222; border-radius:4px;
@@ -33,30 +37,52 @@
   .mdot.green { background:#44cc44; box-shadow:0 0 8px #44cc44; }
   .mdot.red   { background:#ee3333; box-shadow:0 0 8px #ee3333; }
   #status-txt { font-size:13px; flex:1; }
+
+  /* Gallows ID box */
+  #gid-box {
+    width:520px; max-width:100%;
+    background:#0a0a0a; border:1px solid #1d1d1d; border-radius:4px;
+    padding:10px 14px; display:flex; align-items:center; gap:14px; min-height:50px;
+  }
+  #gid-token {
+    font-family:'Courier New',monospace; font-size:28px; font-weight:700;
+    color:#2a2a2a; line-height:1; flex-shrink:0; min-width:28px; text-align:center;
+    letter-spacing:-1px;
+  }
+  #gid-detail {
+    font-size:12px; color:#444; line-height:1.5; flex:1;
+  }
+  #gid-label {
+    font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:#2a2a2a;
+    flex-shrink:0;
+  }
+
   .panels { display:flex; gap:9px; width:520px; max-width:100%; }
   .panel { flex:1; min-width:0; }
-  .plabel { color:#444; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:4px; }
+  .plabel-row {
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:4px;
+  }
+  .plabel { color:#444; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; }
   .out {
     background:#0a0a0a; border:1px solid #1a1a1a; padding:9px;
-    font-family:'Courier New',monospace; font-size:10.5px;
-    min-height:60px; max-height:160px; overflow-y:auto;
-    white-space:pre; line-height:1.65; border-radius:3px;
+    font-family:'Courier New',monospace; font-size:13px;
+    min-height:60px; max-height:160px; overflow-y:auto; overflow-x:hidden;
+    white-space:pre-wrap; word-break:break-word; line-height:1.65; border-radius:3px;
   }
   #path-out  { color:#5bc0de; }
   #morph-out { color:#7ec77e; }
-  .flash { color:#4c4; font-size:11px; display:none; }
+  .flash { color:#4c4; font-size:11px; display:none; margin-left:4px; }
 </style>
 </head>
 <body>
-<h2>DUCTUS PAINT v2</h2>
+<h2>DUCTUS PAINT v2.2</h2>
 <canvas id="c" width="520" height="520"></canvas>
 
 <div class="row">
   <button onclick="undoLast()">↩ undo</button>
   <button onclick="clearAll()">✕ clear</button>
-  <button onclick="copyPath()">path</button>
-  <button onclick="copyMorph()">morfemi</button>
-  <span id="ok" class="flash">✓ copiato</span>
+  <span id="ok" class="flash">✓</span>
 </div>
 
 <div id="status">
@@ -64,13 +90,25 @@
   <span id="status-txt" style="color:#444">disegna una gallows...</span>
 </div>
 
+<div id="gid-box">
+  <span id="gid-label">TOKEN</span>
+  <span id="gid-token">—</span>
+  <span id="gid-detail">nessun tracciato</span>
+</div>
+
 <div class="panels">
   <div class="panel">
-    <div class="plabel">Percorso</div>
+    <div class="plabel-row">
+      <span class="plabel">Percorso</span>
+      <button class="sm" onclick="copyPanel('path-out')">copia</button>
+    </div>
     <div class="out" id="path-out">--</div>
   </div>
   <div class="panel">
-    <div class="plabel">Morfemi</div>
+    <div class="plabel-row">
+      <span class="plabel">Morfemi</span>
+      <button class="sm" onclick="copyPanel('morph-out')">copia</button>
+    </div>
     <div class="out" id="morph-out">--</div>
   </div>
 </div>
@@ -78,7 +116,7 @@
 <script>
 const cv = document.getElementById('c');
 const cx = cv.getContext('2d');
-const SZ = 520, PAD = 88, SP = 172;
+const SZ = 520, PAD = 105, SP = 155;
 const FF = "'Helvetica Neue',Helvetica,Arial,sans-serif";
 
 // ── NODES ──────────────────────────────────────
@@ -96,32 +134,37 @@ const NODES = [
 ];
 
 // ── GALLOWS ────────────────────────────────────
+// eva = token EVA (lowercase)
+// cw_gloss = forma primaria (CW in canvas = CW visivo)
+// ccw_gloss = forma inversa (direzione opposta)
 const GALLOWS = [
-  {name:'K', corner:'NE', gx:2, gy:2, gloss:'decozione',          color:'#e94560'},
-  {name:'F', corner:'NW', gx:0, gy:2, gloss:'macerazione fredda',  color:'#4fc3f7'},
-  {name:'T', corner:'SE', gx:2, gy:0, gloss:'infusione oleosa',    color:'#ff9800'},
-  {name:'P', corner:'SW', gx:0, gy:0, gloss:'pressatura',          color:'#ab47bc'},
+  {name:'K', eva:'k', corner:'NE', gx:2, gy:2,
+   cw_gloss:'decozione',           ccw_gloss:'K inverso',            color:'#e94560'},
+  {name:'F', eva:'f', corner:'NW', gx:0, gy:2,
+   cw_gloss:'macerazione fredda',  ccw_gloss:'F inverso',            color:'#4fc3f7'},
+  {name:'T', eva:'t', corner:'SE', gx:2, gy:0,
+   cw_gloss:'infusione oleosa',    ccw_gloss:'T inverso',            color:'#ff9800'},
+  {name:'P', eva:'p', corner:'SW', gx:0, gy:0,
+   cw_gloss:'pressatura',          ccw_gloss:'P inverso',            color:'#ab47bc'},
 ];
 
 // ── DIRECTIONAL SEMANTICS ──────────────────────
-// Canvas: +x = E = scalda; +y = S (down) = concentra
+// Canvas: +x = E = scalda (ch) | -x = W = raffredda (sh)
+//         -y = N (up) = diluisci (q) | +y = S (down) = concentra
 const DIR_SEM = {
-  'E':  {sym:'→', label:'scalda',               color:'#ff7043'},
-  'W':  {sym:'←', label:'raffredda',            color:'#4fc3f7'},
-  'N':  {sym:'↑', label:'diluisci',             color:'#80deea'},
-  'S':  {sym:'↓', label:'concentra',            color:'#ce93d8'},
-  'NE': {sym:'↗', label:'scalda+diluisci',      color:'#ffb74d'},
-  'NW': {sym:'↖', label:'raffredda+diluisci',   color:'#80cbc4'},
-  'SE': {sym:'↘', label:'scalda+concentra',     color:'#ff8a65'},
-  'SW': {sym:'↙', label:'raffredda+concentra',  color:'#ba68c8'},
+  'E':  {sym:'→', label:'scalda (ch)',              color:'#ff7043'},
+  'W':  {sym:'←', label:'raffredda (sh)',           color:'#4fc3f7'},
+  'N':  {sym:'↑', label:'diluisci (q)',             color:'#80deea'},
+  'S':  {sym:'↓', label:'concentra',               color:'#ce93d8'},
+  'NE': {sym:'↗', label:'scalda + diluisci',        color:'#ffb74d'},
+  'NW': {sym:'↖', label:'raffredda + diluisci',     color:'#80cbc4'},
+  'SE': {sym:'↘', label:'scalda + concentra',       color:'#ff8a65'},
+  'SW': {sym:'↙', label:'raffredda + concentra',    color:'#ba68c8'},
 };
-const LONG_W = 0.55; // grid units → uscita lunga W = conserva-aceto
 
 // ── COORDINATE UTILS ───────────────────────────
-// Grid coords (0..2, y bottom-up) → canvas px
 function tc(gx, gy) { return {x: PAD + gx*SP, y: PAD + (2-gy)*SP}; }
-// col/row (screen) → canvas px
-function cp(col, row) { return {x: PAD + col*SP, y: PAD + row*SP}; }
+function cp(col, row){ return {x: PAD + col*SP, y: PAD + row*SP}; }
 
 // ── MATH ───────────────────────────────────────
 function gauss(pts, s) {
@@ -142,6 +185,7 @@ function rdp(pts, eps) {
   if(mx>eps) return[...rdp(pts.slice(0,mi+1),eps).slice(0,-1),...rdp(pts.slice(mi),eps)];
   return[a,b];
 }
+// SIGNED winding number (positive = CW in canvas = visually CW on screen)
 function winding(pts, ox, oy) {
   let w=0;
   for(let i=0;i<pts.length-1;i++){
@@ -151,26 +195,27 @@ function winding(pts, ox, oy) {
   return w;
 }
 
-// ── CLASSIFICATION ─────────────────────────────
-function classify(strokes) {
-  const pts=strokes.flat(); if(pts.length<4) return [];
-  const cpts=pts.map(p=>tc(p.x,p.y));
-  const sc=GALLOWS.map(g=>{
-    const c=tc(g.gx,g.gy);
-    return{...g,w:Math.abs(winding(cpts,c.x,c.y))};
-  }).filter(g=>g.w>Math.PI*0.4).sort((a,b)=>b.w-a.w);
-  if(!sc.length) return [];
-  const top=sc[0].w;
-  return sc.map(g=>({...g,conf:g.w/top}));
-}
-
 // ── DIRECTION QUANTIZATION ─────────────────────
+// Cardinal bias: ±30° zones for N/S/E/W (clean verticals/horizontals)
+//                ±15° zones for NE/NW/SE/SW (only clearly diagonal)
 function quantDir(dx, dy) {
-  // atan2(-dy, dx): N=up in canvas (-dy), semantic angle
-  const angle=Math.atan2(-dy,dx)*180/Math.PI;
-  const norm=((angle%360)+360)%360;
-  const snap=Math.round(norm/45)%8;
-  return['E','NE','N','NW','W','SW','S','SE'][snap];
+  const angle = Math.atan2(-dy, dx) * 180/Math.PI; // semantic: N=up=+y_semantic
+  const norm  = ((angle % 360) + 360) % 360;
+
+  // Try cardinals first (wider zone)
+  const cardinals = [{a:0,d:'E'},{a:90,d:'N'},{a:180,d:'W'},{a:270,d:'S'}];
+  for(const c of cardinals){
+    const diff = Math.abs(((norm - c.a + 180) % 360) - 180);
+    if(diff <= 30) return c.d;
+  }
+  // Fall through to diagonals
+  const diags = [{a:45,d:'NE'},{a:135,d:'NW'},{a:225,d:'SW'},{a:315,d:'SE'}];
+  let best=diags[0], bd=999;
+  for(const d of diags){
+    const diff=Math.abs(((norm-d.a+180)%360)-180);
+    if(diff<bd){bd=diff;best=d;}
+  }
+  return best.d;
 }
 
 function buildSegments(strokes) {
@@ -179,7 +224,7 @@ function buildSegments(strokes) {
   const raw=[];
   let dir=null, segStart=cpts[0], segLen=0;
   for(let i=1;i<cpts.length;i++){
-    const dx=cpts[i].x-cpts[i-1].x,dy=cpts[i].y-cpts[i-1].y;
+    const dx=cpts[i].x-cpts[i-1].x, dy=cpts[i].y-cpts[i-1].y;
     const d=Math.hypot(dx,dy); if(d<0.5) continue;
     const nd=quantDir(dx,dy);
     segLen+=d;
@@ -200,23 +245,37 @@ function buildSegments(strokes) {
   return out;
 }
 
+// ── CLASSIFICATION (signed winding) ───────────
+function classify(strokes) {
+  const pts=strokes.flat(); if(pts.length<4) return [];
+  const cpts=pts.map(p=>tc(p.x,p.y));
+  const sc=GALLOWS.map(g=>{
+    const c=tc(g.gx,g.gy);
+    const w=winding(cpts,c.x,c.y); // SIGNED
+    return{...g, w, absW:Math.abs(w)};
+  }).filter(g=>g.absW>Math.PI*0.4).sort((a,b)=>b.absW-a.absW);
+  if(!sc.length) return [];
+  const top=sc[0].absW;
+  return sc.map(g=>({...g, conf:g.absW/top, cw:g.w>0}));
+}
+
 // ── STATE ──────────────────────────────────────
 let strokes=[], curRaw=[], drawing=false, emaX=0, emaY=0;
 const EMA=0.22;
 
-// Corner winding: cwBase = from completed strokes; cwAcc = live current stroke
-let cwBase={NE:0,NW:0,SE:0,SW:0};
-let cwAcc ={NE:0,NW:0,SE:0,SW:0};
+// Corner winding state
+let cwBase={NE:0,NW:0,SE:0,SW:0}; // from completed strokes
+let cwAcc ={NE:0,NW:0,SE:0,SW:0}; // live current stroke
 let prevPt=null;
 
-function recomputeBase() {
+function recomputeBase(){
   cwBase={NE:0,NW:0,SE:0,SW:0};
   if(!strokes.length) return;
   const pts=strokes.flat().map(p=>tc(p.x,p.y));
   GALLOWS.forEach(g=>{const c=tc(g.gx,g.gy);cwBase[g.corner]=winding(pts,c.x,c.y);});
 }
 function totalW(corner){ return cwBase[corner]+cwAcc[corner]; }
-function ingestPt(pt) {
+function ingestPt(pt){
   if(!prevPt){prevPt=pt;return;}
   GALLOWS.forEach(g=>{
     const c=tc(g.gx,g.gy);
@@ -226,35 +285,74 @@ function ingestPt(pt) {
   prevPt=pt;
 }
 
+// ── CURL ARROW (canvas arc, always consistent) ─
+// Always 270° sweep, start at 12 o'clock (-π/2).
+// CW: 12→3→6→9, arrow at 9 pointing up.
+// CCW: 12→9→6→3, arrow at 3 pointing up.
+function drawCurlArrow(px, py, r, cw, color) {
+  const startAngle = -Math.PI/2;             // 12 o'clock
+  const sweep      =  Math.PI * 1.5;         // 270°
+  const endAngle   = cw ? startAngle + sweep : startAngle - sweep;
+
+  cx.save();
+  cx.strokeStyle = color;
+  cx.lineWidth   = 3.5;
+  cx.lineCap     = 'round';
+
+  // Arc: anticlockwise=false means CW in canvas (increasing angle)
+  cx.beginPath();
+  cx.arc(px, py, r, startAngle, endAngle, !cw);
+  cx.stroke();
+
+  // Arrowhead at end point
+  const ex = px + r * Math.cos(endAngle);
+  const ey = py + r * Math.sin(endAngle);
+  // Tangent direction: CW→ endAngle+π/2, CCW→ endAngle-π/2
+  const tang = cw ? endAngle + Math.PI/2 : endAngle - Math.PI/2;
+  const as   = 8;
+
+  cx.fillStyle = color;
+  cx.beginPath();
+  cx.moveTo(ex, ey);
+  cx.lineTo(ex + as*Math.cos(tang - 0.5), ey + as*Math.sin(tang - 0.5));
+  cx.lineTo(ex + as*Math.cos(tang + 0.5), ey + as*Math.sin(tang + 0.5));
+  cx.closePath();
+  cx.fill();
+  cx.restore();
+}
+
 // ── DRAW CORNER NODE ───────────────────────────
 function drawCorner(px, py, id) {
-  const w=totalW(id);
-  if(Math.abs(w)>Math.PI*0.35) {
-    // CW in canvas (positive winding w/ y-down) = ↻
-    const cw=w>0;
+  const w    = totalW(id);
+  const absW = Math.abs(w);
+
+  if(absW > Math.PI * 0.5) {
+    const cw = w > 0;
+    const col = cw ? '#ff9944' : '#44aaff';
     // glow ring
-    cx.beginPath();cx.arc(px,py,18,0,Math.PI*2);
-    cx.strokeStyle=(cw?'#ff9944':'#44aaff')+'55';
-    cx.lineWidth=2;cx.stroke();
-    // unicode arrow
+    cx.beginPath();cx.arc(px,py,20,0,Math.PI*2);
+    cx.strokeStyle=col+'44';cx.lineWidth=2;cx.stroke();
+    // consistent curl arrow
+    drawCurlArrow(px, py, 14, cw, col);
+    // direction label below
     cx.save();
-    cx.font='bold 26px sans-serif';
-    cx.fillStyle=cw?'#ff9944':'#44aaff';
-    cx.textAlign='center';cx.textBaseline='middle';
-    cx.fillText(cw?'↻':'↺',px,py);
+    cx.font='bold 9px '+FF;
+    cx.fillStyle=col+'cc';
+    cx.textAlign='center';cx.textBaseline='top';
+    cx.fillText(cw?'↻':'↺', px, py+20);
     cx.restore();
   } else {
-    // white dot
+    // default: white dot
     cx.beginPath();cx.arc(px,py,15,0,Math.PI*2);
     cx.fillStyle='rgba(255,255,255,0.06)';cx.fill();
-    cx.strokeStyle='rgba(255,255,255,0.28)';cx.lineWidth=1;cx.stroke();
+    cx.strokeStyle='rgba(255,255,255,0.25)';cx.lineWidth=1;cx.stroke();
     cx.beginPath();cx.arc(px,py,3,0,Math.PI*2);
-    cx.fillStyle='rgba(255,255,255,0.3)';cx.fill();
+    cx.fillStyle='rgba(255,255,255,0.28)';cx.fill();
     // subtle label
-    cx.fillStyle='rgba(255,255,255,0.18)';
+    cx.fillStyle='rgba(255,255,255,0.16)';
     cx.font='8px '+FF;cx.textAlign='center';cx.textBaseline='middle';
     const off=id.includes('N')?-26:26;
-    cx.fillText(id,px,py+off);
+    cx.fillText(id, px, py+off);
   }
 }
 
@@ -285,30 +383,33 @@ function render() {
     const pts=s.map(p=>tc(p.x,p.y));
     cx.beginPath();cx.moveTo(pts[0].x,pts[0].y);
     pts.forEach(p=>cx.lineTo(p.x,p.y));
-    cx.strokeStyle='rgba(233,69,96,0.18)';cx.lineWidth=1.5;cx.stroke();
+    cx.strokeStyle='rgba(233,69,96,0.15)';cx.lineWidth=1.5;cx.stroke();
   });
 
-  // quantized segments overlay
+  // quantized segments
   if(strokes.length){
     buildSegments(strokes).forEach(seg=>{
       const sem=DIR_SEM[seg.dir];
-      const isLW=(seg.dir==='W'&&seg.len>LONG_W);
-      const col=isLW?'#e8c84a':sem.color;
+      const col=sem.color;
+
       cx.beginPath();cx.moveTo(seg.from.x,seg.from.y);cx.lineTo(seg.to.x,seg.to.y);
       cx.strokeStyle=col;cx.lineWidth=2.5;cx.stroke();
+
       // arrowhead at midpoint
-      const mx=(seg.from.x+seg.to.x)/2,my=(seg.from.y+seg.to.y)/2;
+      const mx=(seg.from.x+seg.to.x)/2, my=(seg.from.y+seg.to.y)/2;
       const ang=Math.atan2(seg.to.y-seg.from.y,seg.to.x-seg.from.x);
       cx.save();cx.translate(mx,my);cx.rotate(ang);
       cx.beginPath();cx.moveTo(7,0);cx.lineTo(-5,-4);cx.lineTo(-5,4);cx.closePath();
       cx.fillStyle=col;cx.fill();cx.restore();
-      // direction label (offset perpendicular)
-      if(seg.len>0.12){
+
+      // label perpendicular offset (only if segment is long enough)
+      if(seg.len>0.14){
         const perp=ang-Math.PI/2;
-        cx.save();cx.font='bold 10px '+FF;
-        cx.fillStyle=col+'bb';cx.textAlign='center';cx.textBaseline='middle';
-        const lbl=sem.sym+(isLW?' [aceto]':'');
-        cx.fillText(lbl,mx+13*Math.cos(perp),my+13*Math.sin(perp));
+        cx.save();
+        cx.font='bold 10px '+FF;
+        cx.fillStyle=col+'bb';
+        cx.textAlign='center';cx.textBaseline='middle';
+        cx.fillText(sem.sym, mx+14*Math.cos(perp), my+14*Math.sin(perp));
         cx.restore();
       }
     });
@@ -318,7 +419,7 @@ function render() {
   if(curRaw.length>1){
     cx.beginPath();cx.moveTo(curRaw[0].x,curRaw[0].y);
     curRaw.forEach(p=>cx.lineTo(p.x,p.y));
-    cx.strokeStyle='rgba(233,69,96,0.38)';cx.lineWidth=2;cx.stroke();
+    cx.strokeStyle='rgba(233,69,96,0.35)';cx.lineWidth=2;cx.stroke();
   }
 
   // nodes
@@ -337,9 +438,9 @@ function render() {
   });
 }
 
-// ── UI UPDATE ──────────────────────────────────
+// ── UI UPDATES ─────────────────────────────────
 function updateStatus(){
-  const dot=document.getElementById('mdot'),txt=document.getElementById('status-txt');
+  const dot=document.getElementById('mdot'), txt=document.getElementById('status-txt');
   if(!strokes.length){
     dot.className='mdot';
     txt.innerHTML='<span style="color:#444">disegna una gallows...</span>';
@@ -352,8 +453,11 @@ function updateStatus(){
   } else {
     dot.className='mdot green';
     const t=res[0];
+    const dirArrow = t.cw ? '↻' : '↺';
+    const gloss    = t.cw ? t.cw_gloss : '<span style="color:#888;font-style:italic">'+t.ccw_gloss+'</span>';
     let h='<span style="font-weight:700;font-size:16px;color:'+t.color+'">'+t.name+'</span>'
-        +' <span style="color:#777">'+t.gloss+'</span>'
+        +' <span style="color:'+t.color+'cc">'+dirArrow+'</span>'
+        +' <span style="color:#777">'+gloss+'</span>'
         +' <span style="color:#555;font-size:11px">'+Math.round(t.conf*100)+'%</span>';
     if(res.length>1&&res[1].conf>0.5)
       h+=' <span style="color:#444;font-size:11px">/ '+res[1].name+' '+Math.round(res[1].conf*100)+'%</span>';
@@ -361,62 +465,87 @@ function updateStatus(){
   }
 }
 
+function updateGidBox(){
+  const tok=document.getElementById('gid-token');
+  const det=document.getElementById('gid-detail');
+  if(!strokes.length){
+    tok.textContent='—'; tok.style.color='#2a2a2a';
+    det.textContent='nessun tracciato'; det.style.color='#444';
+    return;
+  }
+  const res=classify(strokes);
+  if(!res.length){
+    tok.textContent='?'; tok.style.color='#553333';
+    det.textContent='forma non riconosciuta'; det.style.color='#553333';
+    return;
+  }
+  const t=res[0];
+  const dir   = t.cw ? '↻ CW' : '↺ CCW';
+  const gloss = t.cw ? t.cw_gloss : t.ccw_gloss;
+  tok.textContent = t.eva;
+  tok.style.color = t.color;
+  det.innerHTML =
+    '<span style="color:'+t.color+';font-weight:700">'+t.name+'</span>'
+    + ' &nbsp;·&nbsp; corner '+ t.corner
+    + ' &nbsp;·&nbsp; <span style="color:'+t.color+'aa">'+dir+'</span>'
+    + ' &nbsp;·&nbsp; <span style="color:#666">'+gloss+'</span>';
+  det.style.color='';
+}
+
 function updatePanels(){
-  const po=document.getElementById('path-out'),mo=document.getElementById('morph-out');
+  const po=document.getElementById('path-out'), mo=document.getElementById('morph-out');
   if(!strokes.length){po.textContent='--';mo.textContent='--';return;}
   const segs=buildSegments(strokes);
   if(!segs.length){po.textContent='--';mo.textContent='--';return;}
 
-  // path panel
+  // path panel: one line per segment
   po.textContent=segs.map(s=>{
-    const isLW=(s.dir==='W'&&s.len>LONG_W);
-    return DIR_SEM[s.dir].sym+' '+s.dir+' '+s.len.toFixed(2)+'u'+(isLW?' [ACETO]':'');
+    return DIR_SEM[s.dir].sym+' '+s.dir+' '+s.len.toFixed(2)+'u';
   }).join('\n');
 
   // morpheme panel
   const lines=[];
-  lines.push('PATH: '+segs.map(s=>DIR_SEM[s.dir].sym+(s.dir==='W'&&s.len>LONG_W?'*':'')).join(''));
+  lines.push('PATH: '+segs.map(s=>DIR_SEM[s.dir].sym).join(''));
 
   const dmap={};
   segs.forEach(s=>{if(!dmap[s.dir])dmap[s.dir]=0;dmap[s.dir]+=s.len;});
-  const parts=[];
-  Object.entries(dmap).forEach(([d,len])=>{
-    const sem=DIR_SEM[d];if(!sem)return;
-    parts.push((d==='W'&&len>LONG_W)?'conserva-aceto (s)':sem.label);
-  });
-  if(parts.length) lines.push('MOV: '+parts.join(' | '));
+  const mvParts=Object.entries(dmap).map(([d])=>DIR_SEM[d].label).filter(Boolean);
+  if(mvParts.length) lines.push('MOV: '+mvParts.join(' | '));
 
-  // curls from completed strokes
+  // curls (from completed strokes)
   const curlParts=[];
   GALLOWS.forEach(g=>{
     const w=cwBase[g.corner];
-    if(Math.abs(w)>Math.PI*0.35){
-      curlParts.push(g.corner+':'+(w>0?'↻':'↺')+' '+g.gloss);
+    if(Math.abs(w)>Math.PI*0.5){
+      const cw=w>0;
+      const gl=cw?g.cw_gloss:g.ccw_gloss;
+      curlParts.push(g.corner+':'+(cw?'↻':'↺')+' '+gl);
     }
   });
   if(curlParts.length) lines.push('RICCIOLI: '+curlParts.join(' | '));
+
   mo.textContent=lines.join('\n');
 }
 
-function updateAll(){updateStatus();updatePanels();}
+function updateAll(){ updateStatus(); updateGidBox(); updatePanels(); }
 
 // ── INPUT ──────────────────────────────────────
 function gp(e){
-  const r=cv.getBoundingClientRect(),sc=SZ/r.width;
+  const r=cv.getBoundingClientRect(), sc=SZ/r.width;
   const s=e.touches?e.touches[0]:e;
   return{x:(s.clientX-r.left)*sc,y:(s.clientY-r.top)*sc};
 }
 function startStroke(e){
-  drawing=true;const p=gp(e);emaX=p.x;emaY=p.y;
+  drawing=true; const p=gp(e); emaX=p.x; emaY=p.y;
   curRaw=[{x:emaX,y:emaY}];
-  cwAcc={NE:0,NW:0,SE:0,SW:0};prevPt={x:emaX,y:emaY};
+  cwAcc={NE:0,NW:0,SE:0,SW:0}; prevPt={x:emaX,y:emaY};
 }
 function moveStroke(e){
-  if(!drawing)return;const p=gp(e);
-  emaX=EMA*p.x+(1-EMA)*emaX;emaY=EMA*p.y+(1-EMA)*emaY;
+  if(!drawing) return; const p=gp(e);
+  emaX=EMA*p.x+(1-EMA)*emaX; emaY=EMA*p.y+(1-EMA)*emaY;
   const last=curRaw[curRaw.length-1];
   if((emaX-last.x)**2+(emaY-last.y)**2>4){
-    const pt={x:emaX,y:emaY};curRaw.push(pt);ingestPt(pt);render();
+    const pt={x:emaX,y:emaY}; curRaw.push(pt); ingestPt(pt); render();
   }
 }
 function endStroke(){
@@ -427,18 +556,18 @@ function endStroke(){
     x:Math.round(((p.x-PAD)/SP)*100)/100,
     y:Math.round((2-(p.y-PAD)/SP)*100)/100
   })));
-  curRaw=[];prevPt=null;
-  recomputeBase();cwAcc={NE:0,NW:0,SE:0,SW:0};
-  updateAll();render();
+  curRaw=[]; prevPt=null;
+  recomputeBase(); cwAcc={NE:0,NW:0,SE:0,SW:0};
+  updateAll(); render();
 }
 
-cv.addEventListener('mousedown',e=>{startStroke(e);});
-cv.addEventListener('mousemove',e=>{moveStroke(e);});
-cv.addEventListener('mouseup',endStroke);
+cv.addEventListener('mousedown', e=>{startStroke(e);});
+cv.addEventListener('mousemove', e=>{moveStroke(e);});
+cv.addEventListener('mouseup',   endStroke);
 cv.addEventListener('mouseleave',endStroke);
 cv.addEventListener('touchstart',e=>{e.preventDefault();startStroke(e);},{passive:false});
-cv.addEventListener('touchmove',e=>{e.preventDefault();moveStroke(e);},{passive:false});
-cv.addEventListener('touchend',e=>{e.preventDefault();endStroke();},{passive:false});
+cv.addEventListener('touchmove', e=>{e.preventDefault();moveStroke(e);}, {passive:false});
+cv.addEventListener('touchend',  e=>{e.preventDefault();endStroke();},   {passive:false});
 
 // ── ACTIONS ────────────────────────────────────
 function clearAll(){
@@ -453,8 +582,9 @@ function flash(){
   const el=document.getElementById('ok');el.style.display='inline';
   setTimeout(()=>el.style.display='none',1400);
 }
-function copyPath(){navigator.clipboard.writeText(document.getElementById('path-out').textContent).then(flash).catch(()=>{});}
-function copyMorph(){navigator.clipboard.writeText(document.getElementById('morph-out').textContent).then(flash).catch(()=>{});}
+function copyPanel(id){
+  navigator.clipboard.writeText(document.getElementById(id).textContent).then(flash).catch(()=>{});
+}
 
 render();
 </script>
