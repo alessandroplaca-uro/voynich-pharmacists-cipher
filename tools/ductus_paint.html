@@ -2,7 +2,7 @@
 <html lang="it">
 <head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Ductus Paint v2.2</title>
+<title>Ductus Paint v2.3</title>
 <style>
   * { box-sizing:border-box; margin:0; padding:0; }
   body {
@@ -34,15 +34,16 @@
     width:11px; height:11px; border-radius:50%; background:#2a2a2a; flex-shrink:0;
     transition:background .15s, box-shadow .15s;
   }
-  .mdot.green { background:#44cc44; box-shadow:0 0 8px #44cc44; }
-  .mdot.red   { background:#ee3333; box-shadow:0 0 8px #ee3333; }
+  .mdot.green  { background:#44cc44; box-shadow:0 0 8px #44cc44; }
+  .mdot.red    { background:#ee3333; box-shadow:0 0 8px #ee3333; }
+  .mdot.orange { background:#ff9800; box-shadow:0 0 8px #ff9800; }
   #status-txt { font-size:13px; flex:1; }
 
   /* Gallows ID box */
   #gid-box {
     width:520px; max-width:100%;
     background:#0a0a0a; border:1px solid #1d1d1d; border-radius:4px;
-    padding:10px 14px; display:flex; align-items:center; gap:14px; min-height:50px;
+    padding:10px 14px; display:flex; align-items:flex-start; gap:14px; min-height:50px;
   }
   #gid-token {
     font-family:'Courier New',monospace; font-size:28px; font-weight:700;
@@ -50,11 +51,11 @@
     letter-spacing:-1px;
   }
   #gid-detail {
-    font-size:12px; color:#444; line-height:1.5; flex:1;
+    font-size:12px; color:#444; line-height:1.6; flex:1;
   }
   #gid-label {
     font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:#2a2a2a;
-    flex-shrink:0;
+    flex-shrink:0; padding-top:6px;
   }
 
   .panels { display:flex; gap:9px; width:520px; max-width:100%; }
@@ -76,7 +77,7 @@
 </style>
 </head>
 <body>
-<h2>DUCTUS PAINT v2.2</h2>
+<h2>DUCTUS PAINT v2.3</h2>
 <canvas id="c" width="520" height="520"></canvas>
 
 <div class="row">
@@ -119,24 +120,27 @@ const cx = cv.getContext('2d');
 const SZ = 520, PAD = 105, SP = 155;
 const FF = "'Helvetica Neue',Helvetica,Arial,sans-serif";
 
+// Minimum segment length (in grid units) to show semantic annotations.
+// Short micro-movements inside curls are suppressed — the curl is read as
+// a whole CW/CCW unit via the winding number, not decomposed into segments.
+const SEG_MIN_SEMANTIC = 0.35;
+
 // ── NODES ──────────────────────────────────────
-// Cardinal: N=blu, E=rosso, S=verde, W=giallo. Corners: null = white dot.
+// Cardinal labels = solvent codes: K=acqua(N), L=alcool(E), T=olio(S), S=aceto(W).
+// C center node has no label (dark circle only).
 const NODES = [
   {id:'NW', col:0, row:0, fill:null},
-  {id:'N',  col:1, row:0, fill:'#4fc3f7'},
+  {id:'N',  col:1, row:0, fill:'#4fc3f7', label:'K'},
   {id:'NE', col:2, row:0, fill:null},
-  {id:'W',  col:0, row:1, fill:'#e8c84a'},
-  {id:'C',  col:1, row:1, fill:'#2a2a2a'},
-  {id:'E',  col:2, row:1, fill:'#e94560'},
+  {id:'W',  col:0, row:1, fill:'#e8c84a', label:'S'},
+  {id:'C',  col:1, row:1, fill:'#2a2a2a', label:''},
+  {id:'E',  col:2, row:1, fill:'#e94560', label:'L'},
   {id:'SW', col:0, row:2, fill:null},
-  {id:'S',  col:1, row:2, fill:'#66bb6a'},
+  {id:'S',  col:1, row:2, fill:'#66bb6a', label:'T'},
   {id:'SE', col:2, row:2, fill:null},
 ];
 
 // ── GALLOWS ────────────────────────────────────
-// eva = token EVA (lowercase)
-// cw_gloss = forma primaria (CW in canvas = CW visivo)
-// ccw_gloss = forma inversa (direzione opposta)
 const GALLOWS = [
   {name:'K', eva:'k', corner:'NE', gx:2, gy:2,
    cw_gloss:'decozione',           ccw_gloss:'K inverso',            color:'#e94560'},
@@ -149,18 +153,92 @@ const GALLOWS = [
 ];
 
 // ── DIRECTIONAL SEMANTICS ──────────────────────
-// Canvas: +x = E = scalda (ch) | -x = W = raffredda (sh)
-//         -y = N (up) = diluisci (q) | +y = S (down) = concentra
+// These annotations appear ONLY for strokes >= SEG_MIN_SEMANTIC.
+// Short micro-movements inside a ricciolo are read as CW/CCW via winding — not decomposed.
 const DIR_SEM = {
-  'E':  {sym:'→', label:'scalda (ch)',              color:'#ff7043'},
-  'W':  {sym:'←', label:'raffredda (sh)',           color:'#4fc3f7'},
-  'N':  {sym:'↑', label:'diluisci (q)',             color:'#80deea'},
-  'S':  {sym:'↓', label:'concentra',               color:'#ce93d8'},
-  'NE': {sym:'↗', label:'scalda + diluisci',        color:'#ffb74d'},
-  'NW': {sym:'↖', label:'raffredda + diluisci',     color:'#80cbc4'},
-  'SE': {sym:'↘', label:'scalda + concentra',       color:'#ff8a65'},
-  'SW': {sym:'↙', label:'raffredda + concentra',    color:'#ba68c8'},
+  'E':  {sym:'\u2192', label:'scalda (ch)',              color:'#ff7043'},
+  'W':  {sym:'\u2190', label:'raffredda (sh)',           color:'#4fc3f7'},
+  'N':  {sym:'\u2191', label:'diluisci (q)',             color:'#80deea'},
+  'S':  {sym:'\u2193', label:'concentra',               color:'#ce93d8'},
+  'NE': {sym:'\u2197', label:'scalda + diluisci',        color:'#ffb74d'},
+  'NW': {sym:'\u2196', label:'raffredda + diluisci',     color:'#80cbc4'},
+  'SE': {sym:'\u2198', label:'scalda + concentra',       color:'#ff8a65'},
+  'SW': {sym:'\u2199', label:'raffredda + concentra',    color:'#ba68c8'},
 };
+
+// ── DUCTUS LIBRARY ─────────────────────────────
+// Reference patterns for gallows forms.
+// corner: node where the loop is located.
+// cw: true = canonical direction (clockwise in canvas = visually CW).
+// func: procedural meaning from morphological analysis.
+// expected / reversed: human-readable notation for the Coda table.
+const DUCTUS_LIBRARY = {
+  // ── BASE FOUR ──────────────────────────────
+  'k': {
+    eva:'k', name:'K', corner:'NE', cw:true,
+    func:'Decozione \u2014 acqua+calore (NE). Apertura ricetta estrazione acquosa vigorosa.',
+    expected:'\u2193S \u00b7 \u21bbNE',
+    reversed:'\u2193S \u00b7 \u21baNA',
+  },
+  't': {
+    eva:'t', name:'T', corner:'SE', cw:true,
+    func:'Infusione oleosa \u2014 olio+calore (SE). Estrazione prolungata in olio caldo.',
+    expected:'\u2193S \u00b7 \u21bbSE',
+    reversed:'\u2193S \u00b7 \u21baSE',
+  },
+  'p': {
+    eva:'p', name:'P', corner:'SW', cw:true,
+    func:'Pressatura \u2014 SW (aceto+olio). Prima estrazione meccanica a freddo.',
+    expected:'\u2193S \u00b7 \u21bbSW',
+    reversed:'\u2193S \u00b7 \u21baSW',
+  },
+  'f': {
+    eva:'f', name:'F', corner:'NW', cw:true,
+    func:'Macerazione a freddo \u2014 NW (freddo+acqua). Immersione lenta in solvente freddo.',
+    expected:'\u2193S \u00b7 \u21bbNW',
+    reversed:'\u2193S \u00b7 \u21baNW',
+  },
+  // ── ORNATE (bench + gallows) ───────────────
+  // The bench char 'c' adds a left horizontal stroke before the ascender.
+  'ckh': {
+    eva:'ckh', name:'CKH', corner:'NE', cw:true,
+    func:'Decozione intensa \u2014 ch amplifica il calore NE. Estrazione acquosa con pre-riscaldo.',
+    expected:'\u2190W \u00b7 \u2193S \u00b7 \u21bbNE',
+    reversed:'\u2190W \u00b7 \u2193S \u00b7 \u21baNE',
+  },
+  'cth': {
+    eva:'cth', name:'CTH', corner:'SE', cw:true,
+    func:'Infusione oleosa intensa \u2014 ch+olio (SE). Estrazione prolungata ad alta temperatura.',
+    expected:'\u2190W \u00b7 \u2193S \u00b7 \u21bbSE',
+    reversed:'\u2190W \u00b7 \u2193S \u00b7 \u21baSE',
+  },
+  'cph': {
+    eva:'cph', name:'CPH', corner:'SW', cw:true,
+    func:'Pressatura intensa \u2014 ch+SW. Estrazione multipla con aggiunta di calore.',
+    expected:'\u2190W \u00b7 \u2193S \u00b7 \u21bbSW',
+    reversed:'\u2190W \u00b7 \u2193S \u00b7 \u21baSW',
+  },
+  'cfh': {
+    eva:'cfh', name:'CFH', corner:'NW', cw:true,
+    func:'Digestio (F-ch) \u2014 macerazione a caldo. Inversione termica su base F (NW+ch).',
+    expected:'\u2190W \u00b7 \u2193S \u00b7 \u21bbNW',
+    reversed:'\u2190W \u00b7 \u2193S \u00b7 \u21baNW',
+  },
+};
+
+// ── LIBRARY MATCH ─────────────────────────────
+// Returns {match: 'direct'|'reversed'|'none', entry}
+function getLibraryMatch(res) {
+  if (!res.length) return {match:'none', entry:null};
+  const {corner, cw} = res[0];
+  const entries = Object.values(DUCTUS_LIBRARY).filter(e => e.corner === corner);
+  if (!entries.length) return {match:'none', entry:null};
+  const direct   = entries.find(e => e.cw === cw);
+  if (direct)   return {match:'direct',   entry:direct};
+  const reversed = entries.find(e => e.cw !== cw);
+  if (reversed) return {match:'reversed', entry:reversed};
+  return {match:'none', entry:null};
+}
 
 // ── COORDINATE UTILS ───────────────────────────
 function tc(gx, gy) { return {x: PAD + gx*SP, y: PAD + (2-gy)*SP}; }
@@ -196,19 +274,14 @@ function winding(pts, ox, oy) {
 }
 
 // ── DIRECTION QUANTIZATION ─────────────────────
-// Cardinal bias: ±30° zones for N/S/E/W (clean verticals/horizontals)
-//                ±15° zones for NE/NW/SE/SW (only clearly diagonal)
 function quantDir(dx, dy) {
-  const angle = Math.atan2(-dy, dx) * 180/Math.PI; // semantic: N=up=+y_semantic
+  const angle = Math.atan2(-dy, dx) * 180/Math.PI;
   const norm  = ((angle % 360) + 360) % 360;
-
-  // Try cardinals first (wider zone)
   const cardinals = [{a:0,d:'E'},{a:90,d:'N'},{a:180,d:'W'},{a:270,d:'S'}];
   for(const c of cardinals){
     const diff = Math.abs(((norm - c.a + 180) % 360) - 180);
     if(diff <= 30) return c.d;
   }
-  // Fall through to diagonals
   const diags = [{a:45,d:'NE'},{a:135,d:'NW'},{a:225,d:'SW'},{a:315,d:'SE'}];
   let best=diags[0], bd=999;
   for(const d of diags){
@@ -234,7 +307,6 @@ function buildSegments(strokes) {
     }
   }
   if(dir) raw.push({dir,len:segLen/SP,from:segStart,to:cpts[cpts.length-1]});
-  // merge consecutive same-dir
   const out=[];
   raw.forEach(s=>{
     if(out.length&&out[out.length-1].dir===s.dir){
@@ -245,13 +317,13 @@ function buildSegments(strokes) {
   return out;
 }
 
-// ── CLASSIFICATION (signed winding) ───────────
+// ── CLASSIFICATION ─────────────────────────────
 function classify(strokes) {
   const pts=strokes.flat(); if(pts.length<4) return [];
   const cpts=pts.map(p=>tc(p.x,p.y));
   const sc=GALLOWS.map(g=>{
     const c=tc(g.gx,g.gy);
-    const w=winding(cpts,c.x,c.y); // SIGNED
+    const w=winding(cpts,c.x,c.y);
     return{...g, w, absW:Math.abs(w)};
   }).filter(g=>g.absW>Math.PI*0.4).sort((a,b)=>b.absW-a.absW);
   if(!sc.length) return [];
@@ -263,9 +335,8 @@ function classify(strokes) {
 let strokes=[], curRaw=[], drawing=false, emaX=0, emaY=0;
 const EMA=0.22;
 
-// Corner winding state
-let cwBase={NE:0,NW:0,SE:0,SW:0}; // from completed strokes
-let cwAcc ={NE:0,NW:0,SE:0,SW:0}; // live current stroke
+let cwBase={NE:0,NW:0,SE:0,SW:0};
+let cwAcc ={NE:0,NW:0,SE:0,SW:0};
 let prevPt=null;
 
 function recomputeBase(){
@@ -285,13 +356,14 @@ function ingestPt(pt){
   prevPt=pt;
 }
 
-// ── CURL ARROW (canvas arc, always consistent) ─
-// Always 270° sweep, start at 12 o'clock (-π/2).
-// CW: 12→3→6→9, arrow at 9 pointing up.
-// CCW: 12→9→6→3, arrow at 3 pointing up.
+// ── CURL ARROW ─────────────────────────────────
+// Rotated ~180 deg from v2.2: starts at 6 o'clock (PI/2) instead of 12 o'clock.
+// 270 deg sweep covers the 2 outer arcs of the circumference.
+// CW:  6->9->12->3 o'clock  (covers left+top+right, opens at bottom-right)
+// CCW: 6->3->12->9 o'clock  (covers right+top+left, opens at bottom-left)
 function drawCurlArrow(px, py, r, cw, color) {
-  const startAngle = -Math.PI/2;             // 12 o'clock
-  const sweep      =  Math.PI * 1.5;         // 270°
+  const startAngle = Math.PI / 2;
+  const sweep      = Math.PI * 1.5;
   const endAngle   = cw ? startAngle + sweep : startAngle - sweep;
 
   cx.save();
@@ -299,17 +371,14 @@ function drawCurlArrow(px, py, r, cw, color) {
   cx.lineWidth   = 3.5;
   cx.lineCap     = 'round';
 
-  // Arc: anticlockwise=false means CW in canvas (increasing angle)
   cx.beginPath();
   cx.arc(px, py, r, startAngle, endAngle, !cw);
   cx.stroke();
 
-  // Arrowhead at end point
   const ex = px + r * Math.cos(endAngle);
   const ey = py + r * Math.sin(endAngle);
-  // Tangent direction: CW→ endAngle+π/2, CCW→ endAngle-π/2
   const tang = cw ? endAngle + Math.PI/2 : endAngle - Math.PI/2;
-  const as   = 8;
+  const as   = 12;
 
   cx.fillStyle = color;
   cx.beginPath();
@@ -329,26 +398,21 @@ function drawCorner(px, py, id) {
   if(absW > Math.PI * 0.5) {
     const cw = w > 0;
     const col = cw ? '#ff9944' : '#44aaff';
-    // glow ring
-    cx.beginPath();cx.arc(px,py,20,0,Math.PI*2);
+    cx.beginPath();cx.arc(px,py,28,0,Math.PI*2);
     cx.strokeStyle=col+'44';cx.lineWidth=2;cx.stroke();
-    // consistent curl arrow
-    drawCurlArrow(px, py, 14, cw, col);
-    // direction label below
+    drawCurlArrow(px, py, 21, cw, col);
     cx.save();
-    cx.font='bold 9px '+FF;
+    cx.font='bold 10px '+FF;
     cx.fillStyle=col+'cc';
-    cx.textAlign='center';cx.textBaseline='top';
-    cx.fillText(cw?'↻':'↺', px, py+20);
+    cx.textAlign='center';cx.textBaseline='middle';
+    cx.fillText(cw?'\u21bb':'\u21ba', cw ? px+24 : px-24, py+14);
     cx.restore();
   } else {
-    // default: white dot
     cx.beginPath();cx.arc(px,py,15,0,Math.PI*2);
     cx.fillStyle='rgba(255,255,255,0.06)';cx.fill();
     cx.strokeStyle='rgba(255,255,255,0.25)';cx.lineWidth=1;cx.stroke();
     cx.beginPath();cx.arc(px,py,3,0,Math.PI*2);
     cx.fillStyle='rgba(255,255,255,0.28)';cx.fill();
-    // subtle label
     cx.fillStyle='rgba(255,255,255,0.16)';
     cx.font='8px '+FF;cx.textAlign='center';cx.textBaseline='middle';
     const off=id.includes('N')?-26:26;
@@ -361,7 +425,6 @@ function render() {
   cx.clearRect(0,0,SZ,SZ);
   cx.fillStyle='#111';cx.fillRect(0,0,SZ,SZ);
 
-  // grid
   cx.lineWidth=1;cx.setLineDash([]);
   cx.strokeStyle='#191919';
   for(let i=0;i<=2;i++){
@@ -377,7 +440,6 @@ function render() {
   cx.setLineDash([]);
   cx.lineCap='round';cx.lineJoin='round';
 
-  // raw strokes (faded)
   strokes.forEach(s=>{
     if(s.length<2) return;
     const pts=s.map(p=>tc(p.x,p.y));
@@ -386,24 +448,22 @@ function render() {
     cx.strokeStyle='rgba(233,69,96,0.15)';cx.lineWidth=1.5;cx.stroke();
   });
 
-  // quantized segments
   if(strokes.length){
     buildSegments(strokes).forEach(seg=>{
       const sem=DIR_SEM[seg.dir];
-      const col=sem.color;
+      const isSemantic = seg.len >= SEG_MIN_SEMANTIC;
+      const col = isSemantic ? sem.color : '#333';
 
       cx.beginPath();cx.moveTo(seg.from.x,seg.from.y);cx.lineTo(seg.to.x,seg.to.y);
-      cx.strokeStyle=col;cx.lineWidth=2.5;cx.stroke();
+      cx.strokeStyle=col;cx.lineWidth= isSemantic ? 2.5 : 1.2;cx.stroke();
 
-      // arrowhead at midpoint
-      const mx=(seg.from.x+seg.to.x)/2, my=(seg.from.y+seg.to.y)/2;
-      const ang=Math.atan2(seg.to.y-seg.from.y,seg.to.x-seg.from.x);
-      cx.save();cx.translate(mx,my);cx.rotate(ang);
-      cx.beginPath();cx.moveTo(7,0);cx.lineTo(-5,-4);cx.lineTo(-5,4);cx.closePath();
-      cx.fillStyle=col;cx.fill();cx.restore();
+      if(isSemantic){
+        const mx=(seg.from.x+seg.to.x)/2, my=(seg.from.y+seg.to.y)/2;
+        const ang=Math.atan2(seg.to.y-seg.from.y,seg.to.x-seg.from.x);
+        cx.save();cx.translate(mx,my);cx.rotate(ang);
+        cx.beginPath();cx.moveTo(7,0);cx.lineTo(-5,-4);cx.lineTo(-5,4);cx.closePath();
+        cx.fillStyle=col;cx.fill();cx.restore();
 
-      // label perpendicular offset (only if segment is long enough)
-      if(seg.len>0.14){
         const perp=ang-Math.PI/2;
         cx.save();
         cx.font='bold 10px '+FF;
@@ -415,14 +475,12 @@ function render() {
     });
   }
 
-  // live stroke
   if(curRaw.length>1){
     cx.beginPath();cx.moveTo(curRaw[0].x,curRaw[0].y);
     curRaw.forEach(p=>cx.lineTo(p.x,p.y));
     cx.strokeStyle='rgba(233,69,96,0.35)';cx.lineWidth=2;cx.stroke();
   }
 
-  // nodes
   NODES.forEach(n=>{
     const p=cp(n.col,n.row);
     if(!n.fill){
@@ -431,9 +489,11 @@ function render() {
       cx.beginPath();cx.arc(p.x,p.y,15,0,Math.PI*2);
       cx.fillStyle=n.fill;cx.fill();
       cx.strokeStyle='rgba(0,0,0,0.35)';cx.lineWidth=1.5;cx.stroke();
-      cx.fillStyle=n.id==='C'?'#666':'rgba(0,0,0,0.8)';
-      cx.font='bold 9px '+FF;cx.textAlign='center';cx.textBaseline='middle';
-      cx.fillText(n.id,p.x,p.y);
+      if(n.label){
+        cx.fillStyle='rgba(0,0,0,0.8)';
+        cx.font='bold 9px '+FF;cx.textAlign='center';cx.textBaseline='middle';
+        cx.fillText(n.label,p.x,p.y);
+      }
     }
   });
 }
@@ -450,10 +510,15 @@ function updateStatus(){
   if(!res.length){
     dot.className='mdot red';
     txt.innerHTML='<span style="color:#ee3333;font-weight:700;letter-spacing:2px;font-size:14px">NO MATCH</span>';
-  } else {
+    return;
+  }
+
+  const lm = getLibraryMatch(res);
+  const t  = res[0];
+
+  if(lm.match === 'direct'){
     dot.className='mdot green';
-    const t=res[0];
-    const dirArrow = t.cw ? '↻' : '↺';
+    const dirArrow = t.cw ? '\u21bb' : '\u21ba';
     const gloss    = t.cw ? t.cw_gloss : '<span style="color:#888;font-style:italic">'+t.ccw_gloss+'</span>';
     let h='<span style="font-weight:700;font-size:16px;color:'+t.color+'">'+t.name+'</span>'
         +' <span style="color:'+t.color+'cc">'+dirArrow+'</span>'
@@ -462,6 +527,17 @@ function updateStatus(){
     if(res.length>1&&res[1].conf>0.5)
       h+=' <span style="color:#444;font-size:11px">/ '+res[1].name+' '+Math.round(res[1].conf*100)+'%</span>';
     txt.innerHTML=h;
+
+  } else if(lm.match === 'reversed'){
+    dot.className='mdot orange';
+    const entry = lm.entry;
+    txt.innerHTML=
+      '<span style="color:#ff9800;font-weight:700;font-size:14px">\u26a0 DUCTUS INVERTITO</span>'
+      +' <span style="color:#888;font-size:12px">\u2014 prova a disegnare <span style="color:'+t.color+';font-weight:700">'+entry.eva+'</span> al contrario</span>';
+
+  } else {
+    dot.className='mdot red';
+    txt.innerHTML='<span style="color:#ee3333;font-weight:700;letter-spacing:2px;font-size:14px">NO MATCH</span>';
   }
 }
 
@@ -469,62 +545,94 @@ function updateGidBox(){
   const tok=document.getElementById('gid-token');
   const det=document.getElementById('gid-detail');
   if(!strokes.length){
-    tok.textContent='—'; tok.style.color='#2a2a2a';
-    det.textContent='nessun tracciato'; det.style.color='#444';
+    tok.textContent='\u2014'; tok.style.color='#2a2a2a';
+    det.innerHTML='nessun tracciato'; det.style.color='#444';
     return;
   }
   const res=classify(strokes);
   if(!res.length){
     tok.textContent='?'; tok.style.color='#553333';
-    det.textContent='forma non riconosciuta'; det.style.color='#553333';
+    det.innerHTML='forma non riconosciuta'; det.style.color='#553333';
     return;
   }
-  const t=res[0];
-  const dir   = t.cw ? '↻ CW' : '↺ CCW';
-  const gloss = t.cw ? t.cw_gloss : t.ccw_gloss;
+
+  const t   = res[0];
+  const lm  = getLibraryMatch(res);
+  const dir = t.cw ? '\u21bb CW' : '\u21ba CCW';
+
   tok.textContent = t.eva;
   tok.style.color = t.color;
-  det.innerHTML =
+
+  let matchBadge = '';
+  if(lm.match === 'direct'){
+    matchBadge = ' &nbsp;<span style="color:#44cc44;font-size:11px;font-weight:700">\u2713 match</span>';
+  } else if(lm.match === 'reversed'){
+    matchBadge = ' &nbsp;<span style="color:#ff9800;font-size:11px;font-weight:700">\u26a0 invertito</span>';
+    tok.textContent = lm.entry.eva + '?';
+  }
+
+  const line1 =
     '<span style="color:'+t.color+';font-weight:700">'+t.name+'</span>'
-    + ' &nbsp;·&nbsp; corner '+ t.corner
-    + ' &nbsp;·&nbsp; <span style="color:'+t.color+'aa">'+dir+'</span>'
-    + ' &nbsp;·&nbsp; <span style="color:#666">'+gloss+'</span>';
-  det.style.color='';
+    + ' &nbsp;\u00b7&nbsp; corner '+ t.corner
+    + ' &nbsp;\u00b7&nbsp; <span style="color:'+t.color+'aa">'+dir+'</span>'
+    + matchBadge;
+
+  let line2 = '';
+  if(lm.entry){
+    line2 = '<span style="color:#555;font-size:11px">'+lm.entry.func+'</span>';
+  } else {
+    const gloss = t.cw ? t.cw_gloss : t.ccw_gloss;
+    line2 = '<span style="color:#444;font-size:11px">'+gloss+'</span>';
+  }
+
+  det.innerHTML = line1 + '<br>' + line2;
+  det.style.color = '';
 }
 
 function updatePanels(){
   const po=document.getElementById('path-out'), mo=document.getElementById('morph-out');
   if(!strokes.length){po.textContent='--';mo.textContent='--';return;}
-  const segs=buildSegments(strokes);
-  if(!segs.length){po.textContent='--';mo.textContent='--';return;}
+  const allSegs=buildSegments(strokes);
+  if(!allSegs.length){po.textContent='--';mo.textContent='--';return;}
 
-  // path panel: one line per segment
-  po.textContent=segs.map(s=>{
-    return DIR_SEM[s.dir].sym+' '+s.dir+' '+s.len.toFixed(2)+'u';
-  }).join('\n');
+  const segs = allSegs.filter(s => s.len >= SEG_MIN_SEMANTIC);
 
-  // morpheme panel
+  if(segs.length){
+    po.textContent=segs.map(s=>{
+      return DIR_SEM[s.dir].sym+' '+s.dir+' '+s.len.toFixed(2)+'u';
+    }).join('\n');
+  } else {
+    po.textContent='(solo ricciolo)';
+  }
+
   const lines=[];
-  lines.push('PATH: '+segs.map(s=>DIR_SEM[s.dir].sym).join(''));
+  if(segs.length){
+    lines.push('PATH: '+segs.map(s=>DIR_SEM[s.dir].sym).join(''));
+    const dmap={};
+    segs.forEach(s=>{if(!dmap[s.dir])dmap[s.dir]=0;dmap[s.dir]+=s.len;});
+    const mvParts=Object.entries(dmap).map(([d])=>DIR_SEM[d].label).filter(Boolean);
+    if(mvParts.length) lines.push('MOV: '+mvParts.join(' | '));
+  }
 
-  const dmap={};
-  segs.forEach(s=>{if(!dmap[s.dir])dmap[s.dir]=0;dmap[s.dir]+=s.len;});
-  const mvParts=Object.entries(dmap).map(([d])=>DIR_SEM[d].label).filter(Boolean);
-  if(mvParts.length) lines.push('MOV: '+mvParts.join(' | '));
-
-  // curls (from completed strokes)
   const curlParts=[];
   GALLOWS.forEach(g=>{
     const w=cwBase[g.corner];
     if(Math.abs(w)>Math.PI*0.5){
       const cw=w>0;
       const gl=cw?g.cw_gloss:g.ccw_gloss;
-      curlParts.push(g.corner+':'+(cw?'↻':'↺')+' '+gl);
+      curlParts.push(g.corner+':'+(cw?'\u21bb':'\u21ba')+' '+gl);
     }
   });
   if(curlParts.length) lines.push('RICCIOLI: '+curlParts.join(' | '));
 
-  mo.textContent=lines.join('\n');
+  const res=classify(strokes);
+  const lm=getLibraryMatch(res);
+  if(lm.entry){
+    const notation = lm.match==='reversed' ? lm.entry.reversed : lm.entry.expected;
+    lines.push('ATTESO: '+notation);
+  }
+
+  mo.textContent=lines.join('\n') || '--';
 }
 
 function updateAll(){ updateStatus(); updateGidBox(); updatePanels(); }
