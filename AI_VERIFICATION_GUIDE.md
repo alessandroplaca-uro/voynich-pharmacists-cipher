@@ -1,12 +1,12 @@
 # AI Verification Guide — Placa (2026)
 
-**Version 1.4 — 2026-03-26**
+**Version 1.5 — 2026-04-02**
 
 This guide provides structured prompts for AI-assisted replication of the six
 morphological results reported in:
 
 > Placa, A. (2026). *The Pharmacist's Cipher: Six Statistical Tests Supporting
-> a Pharmaceutical Reading of the Voynich Manuscript (MS 408)*. Preprint v1.1.
+> a Pharmaceutical Reading of the Voynich Manuscript (MS 408)*. Preprint v1.2.
 > https://doi.org/10.5281/zenodo.19197846
 
 ---
@@ -65,7 +65,7 @@ sections: Herbal_A, Balneo, Pharma, Zodiac, Stars.
 ### Expected ranges
 
 | Prefix | Ratio C/H |
-|--------|-----------|
+|--------|-----------:|
 | ch-    | 0.97–1.03 |
 | sh-    | 0.97–1.03 |
 | da-    | ~1.00     |
@@ -225,7 +225,7 @@ Report:
 ### Interpretation
 
 Completion markers cluster at the end of lines (consistent with a
-phrasing-final role), while operational and vehicle tokens tend to precede
+phrasingfinal role), while operational and vehicle tokens tend to precede
 material tokens. The ordering is probabilistic, not absolute, consistent
 with agglutinative syntax allowing some flexibility.
 
@@ -257,7 +257,7 @@ IVTFF file. Using $I/$L flags will produce divergent enrichment values.
 ### Expected key checks (from paper Table 5)
 
 | Section | Marker       | Expected enrichment (section/corpus baseline) |
-|---------|--------------|-----------------------------------------------|
+|---------|--------------|----------------------------------------------:|
 | Stars   | l-           | ~1.97×  (73.2‰ vs corpus 37.1‰)              |
 | Stars   | -edy         | ~1.5×                                          |
 | Zodiac  | ot-          | ~2.43×  (155.0‰ vs corpus 63.7‰)             |
@@ -271,8 +271,13 @@ alcohol-heavy section (l- enriched 1.97× vs corpus baseline), consistent
 with tincture formulae. Zodiac uses the passive marker ot- heavily
 (descriptive register) while depleting process-action markers. Balneo is
 the only section where hot-temperature (ch-) and cold-temperature (sh-)
-bench characters reach near-parity, consistent with therapeutic baths
-that apply both thermal modalities.
+bench characters reach near-parity, consistent with a pharmaceutical
+processing timeline that employs multiple thermal operations across
+sequential steps (P77: master multi-path workflow). The Balneo section
+documents all liquid-medium processes — from cold maceration (F-gallows
+opener) to digestio (F-ch variant) to distillation — not therapeutic baths.
+The ch/sh near-parity reflects the alternation between heating and cooling
+phases within pharmaceutical procedures.
 
 ---
 
