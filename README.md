@@ -4,7 +4,7 @@ Replication scripts for:
 
 > Placa, A. (2026). *The Pharmacist's Cipher: Six Statistical Tests Supporting
 > a Pharmaceutical Reading of the Voynich Manuscript (MS 408)*.
-> Preprint v1.2. https://doi.org/10.5281/zenodo.19197846
+> Preprint v1.2. https://doi.org/10.5281/zenodo.19228447
 
 **Companion Report:**
 > Placa, A. (2026b). *The Pharmacist's Cipher — Companion Report: A Morphological Framework, Visual-Textual Convergences, and Testable Predictions for MS 408*.
@@ -203,8 +203,8 @@ Commons licence. The corpus transcription files have their own terms of use
   title  = {The Pharmacist's Cipher: Six Statistical Tests Supporting
             a Pharmaceutical Reading of the Voynich Manuscript ({MS} 408)},
   year   = {2026},
-  note   = {Preprint v1.2. \doi{10.5281/zenodo.19197846}},
-  doi    = {10.5281/zenodo.19197846},
+  note   = {Preprint v1.2. \doi{10.5281/zenodo.19228447}},
+  doi    = {10.5281/zenodo.19228447},
   url    = {https://github.com/alessandroplaca-uro/voynich-pharmacists-cipher}
 }
 
