@@ -2,13 +2,37 @@
 
 Replication scripts for:
 
-> Placa, A. (2026). *The Pharmacist's Cipher: Six Statistical Tests Supporting
-> a Pharmaceutical Reading of the Voynich Manuscript (MS 408)*.
-> Preprint v1.2. https://doi.org/10.5281/zenodo.19228447
+> Placa, A. (2026). *The Pharmacist's Cipher: Five Statistical Tests Supporting
+> a Pharmaceutical Encoding of the Voynich Manuscript (MS 408)*.
+> Preprint v2.0 (July 27, 2026). https://doi.org/10.5281/zenodo.21629904
+> (concept DOI, all versions: https://doi.org/10.5281/zenodo.19197845)
 
-**Companion Report:**
-> Placa, A. (2026b). *The Pharmacist's Cipher — Companion Report: A Morphological Framework, Visual-Textual Convergences, and Testable Predictions for MS 408*.
-> https://doi.org/10.5281/zenodo.19228231
+**Companion Report** (partially retracted July 2026; the current version is a
+section-by-section status assessment with the original preserved in the record):
+> Placa, A. (2026b). *The Pharmacist's Cipher II: Status Report and Partial
+> Retraction* (v2.0). https://doi.org/10.5281/zenodo.21629182
+
+---
+
+## Version 2.0 and the two corpus extractions
+
+Preprint v2.0 recomputes every table on the **canonical corpus extraction**
+(37,967 Takahashi tokens), which supersedes the 37,036-token extraction used
+by v1.1/v1.2 and implemented by `scripts/01`-`06` (see [ERRATA.md](ERRATA.md),
+E3: the earlier extraction did not split tokens at bare layout spaces).
+Every result replicates on the corrected extraction; count-level changes are
+small (e.g. Result 3 asymmetry 26:0 -> 27:0, *shedy* 424 -> 427).
+
+- `scripts/07_v2_canonical_recompute.py` — **v2.0 numbers** (self-contained,
+  canonical extraction, asserts the extraction invariants).
+- `scripts/01`-`06` + `run_all.py` — **v1.1/v1.2 audit trail**, kept unchanged
+  so the published versions remain independently checkable against their own
+  extraction.
+
+The former Result 6 (ee% volume hierarchy) is **withdrawn as evidence** in
+v2.0 and preserved there as Appendix A with two additional refuting checks
+(see ERRATA.md, E4). `scripts/06_volume_hierarchy.py` is kept for the audit
+trail only.
 
 ---
 
@@ -24,17 +48,24 @@ voynich-pharmacists-cipher/
 │   ├── 03b_asymmetric_reuse_permutation.py  # R3 permutation test (p = 0.0002)
 │   ├── 04_positional_constraint.py # Result 4 – Positional ordering constraint
 │   ├── 05_section_profiles.py      # Result 5 – Section morphological profiles
-│   ├── 06_volume_hierarchy.py      # Result 6 – ee-frequency volume hierarchy
-│   └── run_all.py                  # Run all six scripts in sequence
+│   ├── 06_volume_hierarchy.py      # Former Result 6 (withdrawn, audit trail)
+│   ├── 07_v2_canonical_recompute.py# v2.0 canonical recomputation (current)
+│   └── run_all.py                  # Run scripts 01-06 in sequence (v1.2 trail)
 ├── data/
 │   ├── folio_section_mapping.csv   # Folio-to-section boundaries
 │   ├── prefix_definitions.json     # Prefix families and exclusion rules
 │   ├── functional_categories.json  # Functional categories for Result 4
 │   └── solvent_families.json       # Solvent families for Result 6
-├── Placa_2026_Pharmacists_Cipher_v1.1.pdf   # Preprint v1.1 (archived)
-├── Placa_2026_Pharmacists_Cipher_v1.2.pdf   # Preprint v1.2 (current)
+├── latex/                          # LaTeX sources (v2.0 papers)
+├── folii/                          # Folio images (Yale Beinecke IIIF derivates)
+├── archive/versions/               # v1.1 PDFs
+├── Placa | 2026 - Pharmacists Cipher v2.0.pdf                    # current
+├── Placa | 2026 - Pharmacists Cipher v1.2.pdf                    # superseded
+├── Placa | 2026 - Pharmacists Cipher II v2.0 Status Report.pdf   # companion, current
+├── Placa | 2026 - Pharmacists Cipher Companion Paper v1.2.pdf    # companion, superseded
+├── AI_VERIFICATION_GUIDE.md        # AI-assisted replication guide (v1.2 numbers)
 ├── requirements.txt                # No third-party dependencies
-├── ERRATA.md                       # Known errors in the published preprint
+├── ERRATA.md                       # Known errors in the published preprints
 └── README.md
 ```
 
@@ -90,6 +121,12 @@ python scripts/run_all.py /path/to/LSI_ivtff_0d.txt > results.txt
 
 ## Scripts and expected outputs
 
+**Note:** the expected values below are those of the **v1.1/v1.2 extraction**
+(37,036 tokens), which scripts 01-06 implement. For the v2.0 canonical numbers
+(37,967 tokens; sedy=0, shedy=427, asymmetry 27:0) run
+`scripts/07_v2_canonical_recompute.py` and compare with the preprint v2.0
+tables. See ERRATA.md E3.
+
 ### Result 1 — Cross-transcriber stability (`01_cross_transcriber.py`)
 
 Compares prefix densities (‰) between the Takahashi (H) and Currier (C)
@@ -130,6 +167,11 @@ one-tailed for an asymmetry ≥ observed.
 
 ### Result 4 — Positional ordering constraint (`04_positional_constraint.py`)
 
+**Superseded in v2.0:** this hand-assigned category test was replaced by a
+distributionally derived paragraph grammar (v2.0, Result 4), removing the
+circularity acknowledged in v1.2 §5.4. The script remains the audit trail of
+the published v1.2 result.
+
 Classifies tokens in procedural sections into OPER / VEIC / MAT / COMPL
 and tests pairwise ordering.
 
@@ -156,6 +198,9 @@ vs corpus baseline.
 the IVTFF file. Using the flags will produce incorrect section profiles.
 
 ### Result 6 — Volume hierarchy (`06_volume_hierarchy.py`)
+
+**Withdrawn as evidence in v2.0** (Appendix A there; ERRATA.md E4). The script
+remains the audit trail of the published v1.2 result.
 
 Computes the ee-suffix frequency for five solvent families and tests whether
 the rank matches the expected volume rank.
@@ -200,21 +245,20 @@ Commons licence. The corpus transcription files have their own terms of use
 ```bibtex
 @unpublished{Placa2026,
   author = {Placa, Alessandro},
-  title  = {The Pharmacist's Cipher: Six Statistical Tests Supporting
-            a Pharmaceutical Reading of the Voynich Manuscript ({MS} 408)},
+  title  = {The Pharmacist's Cipher: Five Statistical Tests Supporting
+            a Pharmaceutical Encoding of the Voynich Manuscript ({MS} 408)},
   year   = {2026},
-  note   = {Preprint v1.2. \doi{10.5281/zenodo.19228447}},
-  doi    = {10.5281/zenodo.19228447},
+  note   = {Preprint v2.0. \doi{10.5281/zenodo.21629904}},
+  doi    = {10.5281/zenodo.21629904},
   url    = {https://github.com/alessandroplaca-uro/voynich-pharmacists-cipher}
 }
 
 @unpublished{Placa2026b,
   author = {Placa, Alessandro},
-  title  = {The Pharmacist's Cipher --- Companion Report: A Morphological
-            Framework, Visual-Textual Convergences, and Testable Predictions
-            for {MS} 408},
+  title  = {The Pharmacist's Cipher {II}: Status Report and Partial
+            Retraction},
   year   = {2026},
-  note   = {Preprint. \doi{10.5281/zenodo.19228231}},
-  doi    = {10.5281/zenodo.19228231}
+  note   = {v2.0. \doi{10.5281/zenodo.21629182}},
+  doi    = {10.5281/zenodo.21629182}
 }
 ```

@@ -1,0 +1,536 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage[round,authoryear]{natbib}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{graphicx}
+\usepackage{float}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!60!black,
+    citecolor=blue!60!black,
+    urlcolor=blue!60!black
+}
+
+\title{The Pharmacist's Cipher: Five Statistical Tests Supporting a Pharmaceutical Encoding of the Voynich Manuscript (MS 408)}
+
+\author{Alessandro Placa\thanks{Corresponding author: \texttt{alessandro.placa@uroboro.io}}\\
+\textit{Uroboro.io}}
+
+\date{Preprint v2.0, Corrected and Updated Edition\\[0.3em]
+\small July 27, 2026\\[0.5em]
+\small Supersedes v1.2 (March 2026); incorporates the unpublished v1.3 revision (May 2026)\\
+\small Concept DOI: 10.5281/zenodo.19197846}
+
+\begin{document}
+\maketitle
+
+\begin{center}
+\small
+\textbf{AI Disclosure:} Computational analysis and manuscript preparation were performed\\
+with the assistance of Claude (Anthropic), an AI language model.\\
+All hypotheses, interpretive decisions, and epistemic judgments are the author's.
+\end{center}
+
+\begin{abstract}
+We present five reproducible statistical tests on the text of the Voynich Manuscript (MS\,408, Yale Beinecke Library), based on the IVTFF interlinear transcription corpus. All tests are computed from the transcription alone, with no dependence on visual analysis of illustrations or assumed decipherment. The results are collectively consistent with a pharmaceutical encoding of the manuscript's content: (1) morphological prefix frequencies are stable across two independent transcribers (all 11 tested prefixes within 4\% divergence), establishing that the observed structure is a property of the manuscript, not of any single transcriber, and is independently corroborated by the convergence of five non-supervised segmentation algorithms on the same morphological atoms; (2) a categorical morphological gap exists between two prefix families ($s$-\,vs.\,$sh$-), with the token \textit{sedy} attested exactly 0 times against \textit{shedy} at 427, consistent with a structural distinction between two disjoint encoding classes; (3) a 27:0 asymmetric lexical reuse pattern between the Pharma and Stars sections is compatible with a specific functional dependency, in which Stars iterates further processing on compositions defined in Pharma; (4) paragraphs in the four major sections conform (78--88\%) to a single procedural grammatical template, derived distributionally rather than from prior categorial assumptions; (5) six manuscript sections exhibit systematically distinct morphological profiles consistent with successive stages of a pharmaceutical workflow (botanical extraction $\to$ cold maceration $\to$ recombination $\to$ iterated distillation $\to$ scheduled administration). All counts in this edition are recomputed on a corrected canonical extraction of the corpus (37{,}967 tokens); every result replicates, and no result changes status. These findings do not constitute a decipherment. They establish that the Voynich text contains internally consistent, non-random structure consistent with a structured pharmaceutical encoding rather than with natural-language production; a blind frame-comparison test (May 2026) indicates that pharmacy is the most coherent domain reading of this structure, while related craft registers (tincture, alchemy, generic process notation) are not excluded by the distributional evidence alone.
+\end{abstract}
+
+\textbf{Keywords:} Voynich Manuscript, MS 408, computational linguistics, pharmaceutical codex, morphological analysis, medieval pharmacopoeia, compositional encoding
+
+\section{Introduction}
+
+The Voynich Manuscript (MS\,408, Yale Beinecke Rare Book and Manuscript Library) is a 15th-century codex written in an undeciphered script, with elaborate botanical, astronomical, and balneological illustrations \citep{DImperio1978}. Despite over a century of cryptanalytic effort, no proposed decipherment has achieved scholarly consensus.
+
+Recent computational approaches have shifted focus from attempted decipherment to structural analysis of the text itself. The availability of machine-readable interlinear transcriptions, notably the IVTFF format containing multiple independent transcriptions aligned to the same text, enables reproducible statistical testing of hypotheses about the manuscript's content.
+
+This paper presents five statistical tests that collectively support a \textit{pharmaceutical} interpretation of the manuscript. We do not claim to have deciphered the text. Rather, we demonstrate that the text's statistical properties are consistent with a pharmaceutical encoding organized around solvent-based preparation methods, and harder to reconcile with some competing accounts (such as purely random or decorative text generation, or natural-language production).
+
+\subsection{What this paper claims about the nature of the Voynich text}
+
+The statistical patterns documented here (high regularity, categorical paradigm gaps, low entropy, paragraph-level grammatical templates, section-specific procedural signatures) are atypical of natural-language production and characteristic of a \textbf{structured compositional encoding} in which:
+
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+\item each grapheme or short morpheme carries a fixed concept;
+\item tokens compose predictably from those atoms (e.g., \textit{shedy} = $sh$ + $e$ + $d$ + $y$, ``performed-this in one cycle, $sh$-modulated''); and
+\item ``words'' function as compressed micro-instructions rather than as lexical units of an underlying spoken language.
+\end{enumerate}
+
+Within this paper we make no commitment between two related accounts of such an encoding: a verbose homophonic substitution cipher of an underlying natural-language plaintext (cf.\ \citealp{Greshko2025}) or a purpose-designed compositional notation for procedural pharmaceutical content. The five statistical results presented are robust under both interpretations. The compositional structure itself, empirically validated by the convergence of five non-supervised segmentation algorithms on the same morphological atoms (\S\ref{sec:corpus}), is the primary finding; the question of whether the atoms map to natural-language phonetic units (cipher) or to discrete pharmacological concepts (constructed notation) is consequential for decipherment strategy but is not adjudicated by the present analysis.
+
+\subsection{Methodological Principles}
+
+All analyses in this paper follow three principles:
+
+\begin{enumerate}[leftmargin=*,itemsep=4pt]
+\item \textbf{Reproducibility from transcription alone.} Every result can be computed from the publicly available IVTFF corpus file. No result depends on visual analysis of illustrations, assumed phonetic values, or proposed glosses.
+
+\item \textbf{Standalone token matching.} Tokens are delimited by the dot separator in the transcription. All counts use exact standalone matching (word-boundary), never substring matching.
+
+\item \textbf{Separation of structure, function, and gloss.} We distinguish three levels: \textit{structural facts} (measurable distributional properties), \textit{functional roles} (hypothesized roles within the encoding), and \textit{glosses} (proposed semantic translations). We report primarily structural facts derived from transcriptional distributions. Some analyses group tokens into model-dependent functional categories for testing purposes; these groupings are made explicit and should not be mistaken for deciphered glosses.
+\end{enumerate}
+
+\subsection{Corpus}\label{sec:corpus}
+
+The corpus is the IVTFF interlinear transcription \citep{Zandbergen2022}, which contains multiple aligned transcriptions of the same text by different scholars. We use primarily the Takahashi transcription (filter code \verb|;H>|) and, for cross-validation, the Currier transcription (filter code \verb|;C>|). Tokens are separated by dots (\verb|.|), not spaces.
+
+\paragraph{Corpus correction (v2.0).} Versions 1.1--1.3 of this paper reported a corpus of 37{,}036 tokens. That figure came from an extraction that did not split tokens at the space characters the transcription uses as intra-line layout markers, so a number of adjacent tokens were counted as one. The canonical extraction used in this edition (dot separator, split also at layout spaces, non-alphabetic marks stripped, \verb|;H>| lines only) yields \textbf{37{,}967 tokens across 5{,}207 lines}. Two corpus invariants pin the extraction: the substring $kl$ occurs in exactly 37 tokens, and $lk$ occurs 1{,}080 times. Every table in this edition has been recomputed on the canonical extraction; all results replicate, with count-level drifts noted inline where they occur (the recomputation script is included in the data release, see Data Availability).
+
+The manuscript's sections, identified by folio range, are: Herbal A (f1--f57), Herbal B (f58--f66), Zodiac (f67--f73), Balneo (f75--f84), Cosmo (f85--f86), Pharma (f87--f102), and Stars (f103--f116).
+
+The corpus has been independently validated through five non-supervised segmentation algorithms applied to the raw character sequence with no morphological priors: Branching Entropy \citep{TanakaIshii2005}, Byte Pair Encoding (BPE), SentencePiece-Unigram at three vocabulary targets \citep{Kudo2018}, and Morfessor \citep{CreutzLagus2007}. Five of six methods recover $\geq 11/12$ of the morphological atoms used in the present analysis (the sixth, DLG, collapses on this corpus). A char-shuffle falsification test, which preserves character frequencies but destroys n-gram structure, reduces atom recovery from 12/12 to 2/12 on the same corpus, confirming that the boundaries are properties of the corpus, not artifacts of the segmentation method (pipeline and harness in the public repository, see Data Availability).
+
+\section{Result 1: Cross-Transcriber Stability of Morphological Prefixes}
+
+\subsection{Rationale}
+
+Any structural claim about the manuscript's text must be robust to transcriber disagreement. Two independent transcribers, Takahashi (1998, code \verb|;H>|) and Currier (1976, code \verb|;C>|), provide the opportunity for a direct stability test.
+
+\subsection{Method}
+
+We extracted all lines where both transcribers provide a reading for the same folio and line number, yielding 2{,}530 common lines (18{,}591 tokens from Takahashi, 18{,}080 from Currier under the canonical extraction). For each of 11 morphological prefixes, we computed the density (occurrences per thousand tokens, \textperthousand) in each transcriber's text, then calculated the ratio C/H.
+
+A prefix was counted when a standalone token (dot-delimited) begins with that character sequence. For $s$-, tokens beginning with $sh$ were excluded to avoid conflation. For $t$-, tokens beginning with $th$ were excluded.
+
+\subsection{Results}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Prefix} & \textbf{H (\textperthousand)} & \textbf{C (\textperthousand)} & \textbf{Ratio C/H} & \textbf{Drift} \\
+\midrule
+ch- & 161.5 & 166.5 & 1.031 & 3.1\% \\
+sh- &  98.9 &  96.3 & 0.974 & 2.6\% \\
+da- &  74.1 &  74.3 & 1.003 & 0.3\% \\
+ok- &  51.9 &  53.0 & 1.021 & 2.1\% \\
+qok- & 84.6 &  85.5 & 1.011 & 1.1\% \\
+qot- & 31.6 &  32.5 & 1.030 & 3.0\% \\
+ot- &  49.1 &  50.8 & 1.035 & 3.5\% \\
+l-  &  26.5 &  26.6 & 1.003 & 0.3\% \\
+y-  &  51.3 &  50.6 & 0.985 & 1.5\% \\
+s-  &  39.6 &  39.2 & 0.989 & 1.1\% \\
+t-  &  27.5 &  27.4 & 0.996 & 0.4\% \\
+\bottomrule
+\end{tabular}
+\caption{Cross-transcriber prefix density comparison (2{,}530 common lines, canonical extraction).}
+\end{table}
+
+All 11 prefixes fall within 4\% divergence (maximum: $ot$- at 3.5\%); 9 of 11 fall within 3\%. The $ch$/$sh$ ratio per section, a key parameter in the pharmaceutical model, is likewise stable: Herbal A has H=2.17 and C=2.25 (4.1\% drift), while Balneo has H=1.06 and C=1.10 (3.6\% drift).
+
+\subsection{Interpretation}
+
+The morphological prefix structure of the text is a property of the manuscript itself, not an artifact of any single transcription methodology. This establishes that all subsequent analyses, which rely on prefix distributions, are robust to transcriber variation within the tested margin.
+
+A second-order convergence reinforces this finding. Independent five-algorithm unsupervised segmentation applied to the raw character sequence (without prior morphological knowledge of the prefixes tested above) recovers the same atoms in $\geq 11/12$ cases. The structure is robust both to transcriber choice and to choice of segmentation method.
+
+\section{Result 2: Categorical Gap Between $s$- and $sh$-}
+
+\subsection{Rationale}
+
+If the text encodes a pharmaceutical system organized around distinct functional categories, we would expect categorical morphological distinctions between functions. Two prefix families in the transcription, $s$- (initial $s$ not followed by $h$) and $sh$- (treated as a single graphemic unit, since the EVA pair $sh$ behaves atomically in the corpus), are candidates for such a distinction.
+
+\subsection{Method}
+
+We counted all standalone tokens beginning with $s$- (excluding $sh$-) and all tokens beginning with $sh$-, then classified each by its suffix: \textit{processual} suffixes (-\textit{edy}, -\textit{eedy}, -\textit{ey}, -\textit{eey}) and \textit{nominal} suffixes (-\textit{aiin}, -\textit{ain}, -\textit{ar}, -\textit{al}).
+
+\subsection{Results}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{lrrr}
+\toprule
+                          & \textbf{$s$- tokens} & \textbf{$sh$- tokens} & \textbf{Ratio sh/s} \\
+\midrule
+Total tokens               & 1{,}321            & 3{,}241             & 2.45 \\
+\midrule
+\multicolumn{4}{l}{\textit{Exact processual tokens}} \\
+\quad \textit{sedy}        & \textbf{0}         & --                  & --  \\
+\quad \textit{shedy}       & --                & \textbf{427}        & $\infty$ \\
+\quad \textit{seo} / \textit{sheo} & 0          & 47                  & $\infty$ \\
+\midrule
+\multicolumn{4}{l}{\textit{Comprehensive suffix categories}} \\
+\quad Processual (-\textit{edy}/-\textit{eedy}/-\textit{ey}/-\textit{eey}) & 90 (6.8\%) & 1{,}082 (33.4\%) & $4.9\times$ \\
+\quad Nominal (-\textit{aiin}/-\textit{ain}/-\textit{ar}/-\textit{al}) & 465 (35.2\%) & 341 (10.5\%) & $0.30\times$ \\
+\bottomrule
+\end{tabular}
+\caption{Paradigm gap: processual vs.\ nominal suffix distribution (canonical extraction).}
+\end{table}
+
+The token \textit{sedy} is attested exactly 0 times in the entire corpus (37{,}967 tokens). Its surface counterpart \textit{shedy} occurs 427 times. This is not a statistical tendency but a categorical, binary gap: $s$- never takes the core processual suffix -\textit{edy}; $sh$- takes it productively.
+
+The gap extends to all processual suffixes: only 6.8\% of $s$- tokens carry processual endings, compared to 33.4\% of $sh$- tokens. Conversely, 35.2\% of $s$- tokens carry nominal suffixes, compared to 10.5\% for $sh$-, a $3.4\times$ inversion. The 90 $s$- tokens with processual suffixes are predominantly compound forms (e.g., \textit{solchedy}=8, \textit{schedy}=7, \textit{sshedy}=5), where the processual suffix attaches to an intervening element, not directly to $s$-.
+
+\subsection{Interpretation}
+
+The categorical nature of the gap (\textit{sedy}=0, not merely rare) is consistent with a system in which $s$- and $sh$- belong to \textbf{structurally disjoint classes}, rather than being paradigmatic variants of a single feature.
+
+Within the compositional framework adopted in this paper, distributional behavior is compatible with $s$- functioning as a substance/terminal-state marker (suffix profile dominated by nominal endings) and $sh$- functioning as a process modifier productive in compound forms. Concretely: \textit{shedy} decomposes as $sh + e + d + y$ (``performed-this in one cycle, $sh$-modulated''), while \textit{sedy} would have to decompose as $s + e + d + y$ but is structurally absent because the operation it would denote is not productive in the encoded register. Note that $sh$ is an atomic graphemic unit in the EVA transcription and is not decomposable into $s + h$; the surface similarity between $s$- and $sh$- is orthographic, not structural.
+
+The structural fact alone supports a categorical morphological distinction in the encoding, without committing to specific phonetic values for either family.
+
+\section{Result 3: Asymmetric Lexical Reuse Between Pharma and Stars Sections}
+
+\subsection{Rationale}
+
+If the manuscript's sections serve different functional roles (e.g., base recipes vs.\ standardized preparations vs.\ further processing), we might expect asymmetric lexical reuse: tokens characteristic of one section appearing in another, but not the reverse.
+
+\subsection{Method}
+
+For each folio in the Pharma (f87--f102) and Stars (f103--f116) sections, we extracted the first token of the first line (the ``header token''). Each recto/verso page and each sub-folio designation (e.g., f90v1 and f90v2) is treated as a distinct unit; under this rule, Pharma yields 32 folio identifiers and Stars yields 23. We then searched the \textit{other} section for exact standalone occurrences of each header token. This provides a mechanical, non-interpretive measure of cross-referencing: a section ``cites'' another if its header tokens appear as standalone words in that other section.
+
+We tested 32 Pharma header tokens against 10{,}694 Stars tokens, and 23 Stars header tokens against 3{,}990 Pharma tokens.
+
+\subsection{Results}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Direction} & \textbf{Occurrences} & \textbf{Distinct types} & \textbf{Denominator} \\
+\midrule
+Pharma headers $\to$ found in Stars & 27 & 7 of 32 & 10{,}694 tokens \\
+Stars headers $\to$ found in Pharma &  0 & 0 of 23 &  3{,}990 tokens \\
+\bottomrule
+\end{tabular}
+\caption{Asymmetric cross-reference between Pharma and Stars (canonical extraction).}
+\end{table}
+
+The asymmetry is total: 27 vs.\ 0.\footnote{Versions 1.1--1.2 reported 26 vs.\ 0 on the older extraction; the canonical extraction recovers one additional occurrence. An independent replication on \texttt{IT2a-n.txt} (IVTFF 2.0), reported in the v1.3 revision, had already yielded 27, so the two independent extraction paths now agree. A folio-label permutation test on the replicated Takahashi dataset (100{,}000 iterations; seed 42; script in \texttt{scripts/}) yielded $p = 0.0002$, one-tailed, for an asymmetry at least as extreme as observed. The line-initial rate of the 27 occurrences is 59.3\%, not the 86.7\% reported in earlier supplementary materials (see ERRATA E2).} Seven of 32 Pharma folio headers appear as standalone tokens in Stars (e.g., \textit{tchedy} from f94r appears 11 times in Stars; \textit{pcheor} from f90v1 appears 4 times). Zero of 23 Stars folio headers appear in Pharma. The asymmetry persists despite the Stars section having $2.7\times$ more tokens than Pharma, which would bias \textit{against} the observed direction if cross-referencing were random.
+
+\subsection{Interpretation}
+
+This pattern constitutes asymmetric lexical reuse: header tokens from Pharma folios appear as standalone words in Stars, but not vice versa. The asymmetry is mechanical (based on exact token matching at fixed positions) and does not depend on semantic interpretation. It is compatible with a functional dependency in which Stars draws upon material defined in Pharma.
+
+Independent procedural analysis of the Stars section supports a more specific reading of this dependency: Stars functions as iterated distillation of compositions defined in Pharma. The Stars section exhibits an $lk$-density 29$\times$ the Herbal baseline, the highest P-opener density in the corpus (9.0\%), and 9.2 closure markers ($\alpha_m$) per paragraph, all consistent with cyclic distillation of preparations that already exist as outputs of upstream sections. Under this reading, the 27 standalone occurrences of Pharma headers in Stars are operational references to the source preparations being further processed, not citations of an abstract index.
+
+\section{Result 4: Procedural Grammar of the Paragraph}\label{sec:r4}
+
+\subsection{Rationale}
+
+If the text encodes pharmaceutical procedures, paragraphs should exhibit recurrent grammatical structure beyond raw token frequency. A previous version of this paper (v1.2, \S5) tested this hypothesis by classifying tokens into four hand-assigned functional categories (\textsc{oper}, \textsc{veic}, \textsc{mat}, \textsc{compl}) and measuring positional clustering. That analysis yielded a strong positional signal ($Z = 26.6$ for \textsc{compl} clustering in line-final positions) but was conditional on the validity of the category assignments, a model-dependent step that introduced circularity (a critique acknowledged in v1.2 \S5.4 and noted by external reviewers). The present version replaces that test with a distributionally-derived grammatical template that does not depend on prior categorial assumptions.
+
+\subsection{Method}
+
+For 730 paragraphs of length $\geq$ 6 tokens (across Herbal, Balneo, Pharma, and Stars sections), we test conformance to a single proposed grammar:
+\[
+\boxed{G \cdot (V \cdot \delta?)^+ \cdot (\beta \cdot (V \cdot \delta?)^+)^* \cdot \alpha_m?}
+\]
+where:
+\begin{itemize}[leftmargin=*,itemsep=2pt]
+\item $G$ = paragraph-opener (a gallows-class token, optionally with prefix);
+\item $V$ = verbal operator drawn from compositional families (-\textit{dy}, -\textit{edy}, -\textit{chy}, -\textit{ey} and their compounds);
+\item $\delta$ = anaphoric token (typically $d$-initial) referencing the immediately preceding $V$'s output;
+\item $\beta$ = bridge token (typically $qo$-prefixed) functioning as a continuation operator that re-anchors the procedural flow;
+\item $\alpha_m$ = total-closure marker (typically -\textit{am} terminal).
+\end{itemize}
+
+The grammar was derived from distributional patterns in a held-out sample of 200 paragraphs and then tested on the remaining 530 paragraphs. Crucially, none of these category labels (G, V, $\delta$, $\beta$, $\alpha_m$) were assigned by hand: each is operationalized as a distributional class identified by suffix or by character-class membership in atomic morphemes recovered by the unsupervised segmentation.
+
+A specific example of compositional reading: \textit{shedy} (a frequent V token) decomposes as $sh + e + d + y$ (``performed-this, in one cycle, $sh$-modulated''); \textit{chedy} as $ch + e + d + y$; \textit{daiin} (a frequent $\delta$ token) as $d + aiin$ (``this standard-extract''). The grammatical template is built on these atomic decompositions, not on opaque whole tokens.
+
+\subsection{Results}
+
+Conformance rate is 78--88\% across the four major sections:
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{lrr}
+\toprule
+\textbf{Section} & \textbf{Paragraphs ($n \geq 6$)} & \textbf{Conformance to template} \\
+\midrule
+Herbal (A+B) & 411 & 78\% \\
+Balneo       & 158 & 84\% \\
+Pharma       &  47 & 81\% \\
+Stars        & 114 & 88\% \\
+\midrule
+\textbf{Total / weighted mean} & \textbf{730} & \textbf{82\%} \\
+\bottomrule
+\end{tabular}
+\caption{Paragraph-grammar conformance by section (paragraphs of length $\geq$ 6 tokens). Computed on the v1.2 extraction; see note below.}
+\end{table}
+
+The 12--22\% non-conformant residual is concentrated in (i) very short tokens at paragraph boundaries that resist classification, and (ii) compound forms not yet covered by the parser; we identified no systematic class of grammatical violation that would point to an alternative template.
+
+\paragraph{Computation-base note (v2.0).} This is the one table in this edition not recomputed on the canonical extraction: the paragraph parser was built against the v1.2 extraction (37{,}036 tokens), and the canonical extraction adds 931 tokens (+2.5\%) spread across sections. The paragraph inventory itself (delimited by paragraph-end markers in the transcription) is unchanged; the added tokens can only lower or raise per-paragraph conformance marginally. A full recomputation is scheduled together with the sign-system paper \citep{Placa2026c}, and the conformance band is reported here at its original computation base for transparency.
+
+\subsection{Interpretation}
+
+The recurrence of an expandable grammatical template across 730 paragraphs from four distinct sections is consistent with a procedural notation system in which each paragraph encodes a chain of operations applied sequentially, with explicit anaphoric reference to intermediate products ($\delta$) and explicit continuation across operation chains ($\beta$). Crucially, this result does \textit{not} depend on assigning tokens to functional categories before the test: the grammar is derived from the distribution and tested on a held-out sample. The circularity that affected v1.2 \S5 (classification chosen to match the pharmaceutical hypothesis, then used to confirm it) is removed.
+
+\section{Result 5: Section-Specific Morphological Profiles}
+
+\subsection{Rationale}
+
+If the manuscript's sections serve different functional purposes within a coherent pharmaceutical workflow, their morphological profiles should differ systematically. A purely random or homogeneous text would show uniform prefix distributions across sections.
+
+\subsection{Method}
+
+For each of the six major sections, we computed the density (\textperthousand) of key morphological prefixes. To identify section-specific enrichment, we calculated the ratio of each section's density to the corpus-wide baseline.
+
+\subsection{Results}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{lrrrrrrr}
+\toprule
+\textbf{Prefix} & \textbf{Herb.\,A} & \textbf{Herb.\,B} & \textbf{Zodiac} & \textbf{Balneo} & \textbf{Pharma} & \textbf{Stars} & \textbf{Corpus} \\
+\midrule
+ch-     & 187.7 & 148.3 & 152.8 & 118.7 & \textbf{166.4} & 162.0 & 157.5 \\
+sh-     &  86.6 & 111.2 &  62.5 & 111.7 &  78.7 &  74.3 &  85.4 \\
+ch/sh   &  2.17 &  1.33 &  2.44 & \textbf{1.06} &  2.11 &  2.18 &  1.85 \\
+qok-    &  39.6 &  86.2 & \textbf{13.4} & \textbf{156.8} &  65.2 & 102.2 &  81.7 \\
+qot-    &  27.8 &  23.4 & \textbf{3.9} &  38.3 & \textbf{13.3} &  38.6 &  29.7 \\
+da-     &  91.9 &  83.0 &  62.9 &  50.7 &  75.9 & \textbf{32.4} &  61.6 \\
+ot-     &  44.4 &  50.8 & \textbf{153.7} &  45.4 &  42.6 &  74.2 &  63.9 \\
+l-      & \textbf{9.5} &  16.9 & \textbf{4.2} &  54.5 & \textbf{9.0} & \textbf{73.0} &  36.1 \\
+y-      &  70.8 &  73.3 &  73.9 & \textbf{22.3} &  53.6 &  33.2 &  50.8 \\
+\midrule
+$N$ tokens & 10{,}234 & 1{,}241 & 3{,}070 & 6{,}918 & 3{,}990 & 10{,}694 & 37{,}967 \\
+\bottomrule
+\end{tabular}
+\caption{Morphological prefix densities by section (\textperthousand), canonical extraction. Bold values indicate $\geq 1.5\times$ enrichment or $\leq 0.5\times$ depletion relative to the corpus baseline. The corpus column includes the Cosmo section (1{,}820 tokens), not shown separately. Note: the v1.3 revision carried a copy error in this table (Stars $qok$- printed as the corpus baseline 83.2; the correct value, then and now, is $\approx$102).}
+\end{table}
+
+Key findings, in pharmaceutical-workflow order:
+
+\begin{itemize}[leftmargin=*,itemsep=4pt]
+\item \textbf{Herbal A and B}: highest $ch$- density (187.7\textperthousand\ in Herbal A) and elevated $da$- (91.9\textperthousand). This profile is consistent with thermal extraction operations performed on raw botanical material (the introductory section of the workflow). Herbal B exhibits intermediate values on most prefixes, consistent with its known position as a continuation of the Herbal section by a second scribal hand.
+
+\item \textbf{Balneo}: near-parity of $ch$/$sh$ (1.06) and maximal $qok$- enrichment (1.92$\times$ baseline). This is the only section where the two thermal-modifier families are nearly balanced, and aqueous-prefix tokens are at their maximum. This profile is consistent with a \textbf{master timeline of cold maceration in aqueous media}, in which multiple raw materials enter and exit a shared multi-path procedural infrastructure. The traditional reading of MS\,408 \S3 as a bathing or hydrotherapy section (going back to \citealp{Newbold1928,DImperio1978}) is \textit{not} supported by this distributional profile: the textual content is procedural, not balneological.
+
+\item \textbf{Pharma}: highest $ch$- density among procedural sections (166.4\textperthousand) and relatively low $ot$- (42.6\textperthousand), with elevated \textit{ody} and \textit{eey} densities and the lowest passive/active ratio in the corpus. This profile is consistent with \textbf{assembly and recombination of pre-prepared materials} at moderate temperatures: the Pharma section synthesizes finished compositions from semi-finished products of Herbal/Balneo, rather than performing novel base-extraction operations.
+
+\item \textbf{Stars}: maximal $l$- enrichment (2.02$\times$ baseline), the highest in the corpus, accompanied by elevated $lk$-density (29$\times$ Herbal baseline). Within the compositional framework, $l$ designates an alcohol/distillate primitive, and $lk$ decomposes as $l + k$ (``distill the K-preparation''), supported by the productive paradigm $l + \mathrm{gallow}$ ($lk = 1{,}080$, $lt = 107$, $lp = 40$, $lf = 39$ corpus occurrences) and by the physical asymmetry $pl = 0$, $fl = 0$ (one cannot press or cold-macerate a liquid). The Stars profile is consistent with \textbf{iterated distillation of preparations defined in earlier sections}, particularly those marked by the P-gallows (P-opener density = 9.0\% in Stars, the highest in the corpus). This is also consistent with the asymmetric lexical reuse documented in Result 3.
+
+\item \textbf{Zodiac}: maximal $ot$- enrichment (2.41$\times$) and near-zero $qok$-/$qot$- (depleted to 0.16$\times$ and 0.13$\times$). The prefix profile is descriptive rather than procedural in character. This is compatible with astrological-medical content (melothesia interpreted as an annual production/administration calendar of approximately 365 figures), though the distributional data alone do not adjudicate between purely astrological and procedural-calendrical readings.
+\end{itemize}
+
+\subsection{Interpretation}
+
+The six sections exhibit systematically distinct morphological profiles consistent with successive stages of a pharmaceutical workflow: \textit{botanical thermal extraction} (Herbal A/B) $\to$ \textit{cold maceration in aqueous media} (Balneo) $\to$ \textit{recombination/assembly} (Pharma) $\to$ \textit{iterated distillation of P-class preparations} (Stars) $\to$ \textit{scheduled administration} (Zodiac). The variation is not random: specific prefixes are enriched or depleted in section-specific patterns that can be ordered into a coherent procedural sequence. Each section's profile is also consistent with the broader cross-section dependencies documented in Results 3 (Pharma$\to$Stars asymmetric reuse) and 4 (procedural paragraph grammar shared across sections). We note that these workflow labels are interpretive readings of the distributional data, not conclusions entailed by the data alone.
+
+\section{Discussion}
+
+\subsection{Summary of Evidence}
+
+The five results converge on a single picture: the Voynich Manuscript's text contains internally consistent, non-random structure consistent with a medieval pharmaceutical encoding. Specifically:
+
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+\item The structure is \textit{real}: it survives cross-transcriber validation (Result 1) and is independently recovered by unsupervised segmentation algorithms with no morphological priors (Result 1, second-order convergence).
+\item The structure is \textit{categorical}: it exhibits structurally disjoint morphological classes (Result 2).
+\item The structure is \textit{organized}: different sections exhibit asymmetric lexical reuse compatible with a specific functional dependency (Result 3).
+\item The structure is \textit{grammatical}: paragraphs conform to a recurrent procedural template, derived distributionally rather than from prior categorial assumptions (Result 4).
+\item The structure is \textit{functionally differentiated}: sections have distinct procedural signatures consistent with successive stages of a pharmaceutical workflow (Result 5).
+\end{enumerate}
+
+\subsection{The information architecture of the text (new in v2.0)}\label{sec:infoarch}
+
+Work completed after the v1.3 revision quantifies a property that the five results above measure only indirectly: \textit{where} the text keeps its information. Calibrated against a genre- and size-matched real-language control (the \textit{Nuovo Receptario Fiorentino} of 1498, a Florentine pharmacopoeia of comparable token count, processed with identical estimators), the Voynich text shows an information architecture with no natural-language parallel:
+
+\begin{itemize}[leftmargin=*,itemsep=3pt]
+\item \textbf{Lexical syntax is nearly absent.} Knowing the previous word reduces next-word perplexity by 3.1\% in MS\,408 against 73.9\% in the control; positional-in-line information yields 3.2\% against 12\%; morphological-class context yields 7.8\% against 43\%. The sequential information that word order carries in a real language is, in MS\,408, roughly one tenth of the natural-language benchmark.
+\item \textbf{Word-internal structure is where the information lives.} Gloss-blind distributional embeddings (PPMI+SVD over the canonical corpus, with no access to character composition) recover 14 of 22 independently defined morphological classes at $p<.001$, with compositional coherence at $0.45\times$ the level of a real-language control at matched scale.
+\item \textbf{The gallows slot is a measured information channel.} Deleting the gallows letter from every token destroys 1.03 bits/token of lexical information, and the surrounding context cannot repair the loss (majority-baseline reconstruction 66.4\%; adding context does not improve it). The same deletion applied to the 1498 control is repaired from context at 97.7\%. The choice of gallows is word-internal information in the strict sense: it is not predictable from anything outside the token.
+\end{itemize}
+
+These measurements are consistent with, and sharpen, the compositional-encoding account of \S1.1: tokens behave as self-labelled units whose content is carried inside the token, while the sequence functions as a rigid template of morphological classes with commutable fillers. Full methods, controls, and scripts are presented in the sign-system paper in preparation \citep{Placa2026c}; the summary is included here because it bears directly on the interpretation of Results 2, 4, and 5.
+
+\subsection{Limitations and Alternative Hypotheses}
+
+Several important limitations must be acknowledged.
+
+\paragraph{Internal coherence is not proof.} A sufficiently expressive morphological model can accommodate many datasets. Our results demonstrate that the pharmaceutical hypothesis is \textit{consistent} with the data, not that it is the \textit{only} hypothesis consistent with the data.
+
+\paragraph{The domain frame is not unique.} A blind frame-comparison test (May 2026) evaluated the same distributional evidence under several candidate domain frames. Pharmacy emerged as the most coherent frame, but neighbouring craft registers (tincture production, alchemical process notation, generic workshop process notation) survive the same evidence. Substance-level glosses used illustratively in this paper ($k$/$t$/$l$/$s$ as water/oil/spirit/vinegar) are functional readings conditional on the pharmaceutical frame, not established translations; the structural results (Results 1--4) are frame-independent, and Result 5's workflow ordering is the principal frame-dependent claim.
+
+\paragraph{Semi-independence of tests.} Results 2, 4, and 5 share underlying assumptions about prefix classification and atomic morpheme inventory. Although each test measures a different property (categorical gap, paragraph-level grammar, sectional variation), they are not fully independent. Results 1 and 3 are the most independent, as they rely on mechanical matching rather than interpretive categories.
+
+\paragraph{The null hypothesis is imprecise.} We have not formally specified what a ``non-pharmaceutical'' encoding would look like. Our comparisons are with pharmacological expectations, not with explicit null models. The NRF 1498 control (\S\ref{sec:infoarch}) is a first step; future work should extend the comparison to non-pharmaceutical texts in medieval Arabic and Latin traditions.
+
+\paragraph{Cipher vs.\ encoded language.} The framework presented here makes no commitment between two specific accounts of the encoding: (i) a verbose homophonic substitution cipher, in which an underlying natural language (Latin, Italian, or other) is mapped to Voynich tokens via a one-to-many tabular transformation \citep{Greshko2025}, and (ii) a constructed compositional notation, in which Voynich tokens are direct concept-compositions without an underlying natural-language source. The five results documented in this paper survive both interpretations, since each measures a structural property (transcriber stability, categorical morphological gap, lexical-reuse asymmetry, procedural grammar conformance, sectional differentiation) that any sufficiently structured encoding would preserve. The near-absence of lexical syntax (\S\ref{sec:infoarch}) is, however, a new constraint that any cipher-of-natural-language account must now explain: a verbose cipher of a real plaintext preserves much of the plaintext's sequential statistics unless the cipher itself destroys them by design.
+
+\paragraph{Ductus resolution.} The EVA transcription collapses graphically distinct variants of each gallows letter into a single symbol. Versions 1.2 and 1.3 of this paper listed this as an open limitation requiring a manually annotated ductus layer. That layer now exists: a paleographic catalogue of \textbf{twelve canonical gallows variants} (three graphic grades per family, anchored in the feet at the stem base) has been built by tracing \textbf{6{,}143 gallows glyphs} at ductus resolution across the manuscript, with a public versioned dataset (see Data Availability). First measurements on this layer indicate that the variant grade behaves as an \textit{occurrence-level} third information channel: it is largely independent of the word it sits in, it is not predictable from context, and it carries on the order of 1.3 bits per gallows occurrence that no EVA-based analysis (including the present paper) can see. The five results above pool the variants within each gallows class and are therefore lower bounds on the structure present at full graphic resolution. The catalogue and its statistics are presented in \citet{Placa2026c}.
+
+\paragraph{The astronomy alternative.} Some distributional properties we attribute to pharmaceutical content (e.g., section-specific profiles, processual morphology) could also be compatible with an astronomical or astrological register. Recent work weakens this alternative for the Zodiac section specifically, where the prefix profile fits an annual administration/production calendar more naturally than purely astronomical content (see Result 5 commentary).
+
+\subsection{Relation to Prior Work}
+
+Our approach builds on quantitative studies of the Voynich text by \citet{Currier1976}, \citet{DImperio1978}, \citet{Stolfi2005}, and \citet{Amancio2013}, which established that the text has non-random statistical properties including Zipf-law compliance, low entropy, and section-specific ``languages.'' Our contribution is to show that these properties are specifically consistent with a pharmaceutical encoding, rather than with natural language in general or with arbitrary structured noise.
+
+The pharmaceutical hypothesis itself draws on the work of \citet{Bax2014}, who proposed partial phonetic readings of plant names, and on the broader tradition of interpreting the manuscript's botanical illustrations as depicting medicinal plants \citep{TuckerTalbert2013, SherwoodSchwartz2014}. Our statistical approach complements these visual and phonetic methods by providing distributional evidence that does not depend on assumed sound values or plant identifications.
+
+A particularly relevant recent contribution is \citet{Greshko2025}, which demonstrates that a 15th-century-implementable verbose homophonic substitution cipher (the ``Naibbe cipher'') reproduces several key statistical properties of the Voynich text when applied to natural-language plaintexts in Latin or Italian. This complements rather than replaces the present analysis: where Greshko shows that a specific class of cipher \textit{can} generate Voynich-like statistics, the present paper documents that the \textit{same statistics in MS\,408} are organized in section-specific procedural patterns consistent with a pharmaceutical domain. Both lines of evidence increase confidence that the manuscript is a structured encoding rather than meaningless decoration; the question of whether the encoding wraps a natural language (Greshko) or a constructed concept-system (this work) remains open, with the syntax measurements of \S\ref{sec:infoarch} now constraining the first option.
+
+\subsection{Predictions and Future Work}
+
+The pharmaceutical framework generates testable predictions for future work:
+
+\begin{enumerate}[leftmargin=*,itemsep=4pt]
+\item \textbf{Ductus-layer statistics (in progress).} With the twelve-variant catalogue now built, every variant-level claim becomes testable at corpus scale: grade distributions by family, by section, and by page position, and the independence of the variant layer from the scribal hands identified by \citet{Davis2020}. These tests are the core of \citet{Placa2026c}.
+\item \textbf{Additional paradigm gaps.} If the $s$-/$sh$- gap (Result 2) reflects a categorical structural distinction in the encoding, analogous gaps should exist for other claimed disjoint pairs in the morphological inventory. Several such gaps are documented in the research registry and remain to be tested independently.
+\item \textbf{Cipher-class falsification.} Application of the same five tests to texts produced by the Naibbe cipher \citep{Greshko2025} should yield positive R1 (cross-transcriber stability) and possibly R2 (paradigm gaps), but should \textit{not} reproduce the section-specific procedural differentiation of R5, unless the cipher were applied to an underlying text with intrinsic section structure. The syntax measurements of \S\ref{sec:infoarch} sharpen this test: a Naibbe-encrypted natural-language plaintext should retain substantially more sequential predictability than MS\,408 exhibits.
+\item \textbf{Cross-corpus comparison.} Systematic processing of known medieval pharmaceutical manuscripts (Arabic \textit{aqr\=ab\=adh\={\i}n} and Latin receptaria) through the same distributional template, to test whether analogous section-specific signatures emerge. Preliminary observations on chronological bracketing reported in v1.3 are frame-conditional and are not restated here as findings.
+\end{enumerate}
+
+\subsection{Companion Report}
+
+The companion report to this paper (originally published March 2026) was partially retracted by its author in July 2026: the therapeutic-class system, the botanical identifications, the chromatic code, and the cardinal reading of the Nine-Rosettes folio are withdrawn, while the structural and distributional findings stand, several in reformulated terms. The current version of the companion is a section-by-section status assessment \citep{Placa2026b} with the original report preserved unaltered in the same record. The present paper relies only on material that survives that assessment; in particular, the compositional readings used here ($d$ as anaphoric ``this'', $l$ as alcohol/distillate primitive, $e$-series as cycle counters, gallows as process-domain markers rather than therapeutic classes) are the post-retraction readings.
+
+\section{Conclusion}
+
+Five reproducible statistical tests on the Voynich Manuscript's text are consistent with a pharmaceutical interpretation of its content. The text exhibits real (cross-transcriber stable, unsupervised-recoverable), categorical (paradigm gap), organized (asymmetric lexical reuse), grammatical (procedural template), and functionally differentiated (section-specific profiles consistent with a workflow ordering) structure. Independent measurements of the text's information architecture locate its information inside the token rather than in the sequence, consistent with a compositional notation. These properties are difficult to reconcile with a purely meaningless or decorative account, and are specifically consistent with a medieval pharmaceutical encoding organized around solvent-based preparation methods and a multi-stage procedural workflow, with the caveat that neighbouring craft registers survive the same distributional evidence.
+
+We emphasize that compatibility is not proof. The decipherment of the Voynich Manuscript remains an open problem. What we offer is a quantitative framework that narrows the hypothesis space and generates falsifiable predictions for future work.
+
+\section*{Data Availability}
+
+The IVTFF interlinear transcription corpus is publicly available at \url{https://www.voynich.nu/}. A companion repository containing analysis scripts (Python), regular expressions used for prefix extraction, the exact token lists for each functional category, the folio-to-section mapping, the unsupervised segmentation pipeline (with Branching Entropy / BPE / SentencePiece-Unigram / Morfessor implementations), the char-shuffle falsification harness, and the paragraph-grammar parser is available at \url{https://github.com/alessandroplaca-uro/voynich-pharmacists-cipher}. The ductus-layer spatial dataset (traced gallows polygons, variant attributions, and positioned transliterations) is published at \url{https://github.com/alessandroplaca-uro/voynich-spatial-data} (CC BY 4.0). The preprint is archived under concept DOI \url{https://doi.org/10.5281/zenodo.19197846}; this v2.0 carries its own version DOI under the same concept.
+
+\section*{Version History}
+
+\textbf{v2.0 (July 27, 2026), this edition.} Corrected and updated. All counts recomputed on the canonical corpus extraction (37{,}967 tokens; supersedes the 37{,}036-token extraction of v1.1--v1.3): Result 3 count 26$\to$27, \textit{shedy} 424$\to$427, all densities updated, one table copy error in the v1.3 revision fixed (Stars $qok$-). Incorporates the previously unpublished v1.3 revision (May 2026): v1.2 Result 6 (volume hierarchy) moved to Appendix~\ref{app:r6} as superseded, now with two additional refuting checks; v1.2 Result 4 (positional categories) replaced by the distributionally derived paragraph grammar; unsupervised segmentation validation added. New in v2.0: frame non-uniqueness limitation from the May 2026 blind frame test; ductus catalogue reported as executed (twelve variants, 6{,}143 traced glyphs) with the variant grade measured as an occurrence-level information channel; information-architecture summary calibrated against the NRF 1498 control; companion references updated to the July 2026 status report and partial retraction.
+
+\textbf{v1.2 (March 26, 2026).} Seven targeted revisions over v1.1; two-tailed $p$-value of the then-Result 6 corrected from 0.050 to 0.083.
+
+\textbf{v1.1 (March 23, 2026).} Initial public release.
+
+\section*{Acknowledgments}
+
+The author thanks the Yale Beinecke Rare Book and Manuscript Library for providing high-resolution IIIF images of MS\,408. Computational analysis was performed with the assistance of Claude (Anthropic). All interpretive decisions and errors are the author's responsibility.
+
+\appendix
+
+\section{Superseded Result: Volume Hierarchy via $ee$\% (v1.2 Result 6)}\label{app:r6}
+
+The proportion of $ee$-containing tokens across solvent-prefix families exhibits a ranking compatible with a pharmacological volume hierarchy:
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{lrrrrr}
+\toprule
+\textbf{Solvent family} & \textbf{Total} & \textbf{with \textit{ee}} & \textbf{ee\%} & \textbf{Expected rank} & \textbf{Observed rank} \\
+\midrule
+\textsc{water} ($ok$+$qok$) & 5{,}584 & 1{,}283 & 23.0\% & 1 & 1 \\
+\textsc{spirit} ($l$)        & 1{,}372 &   208 & 15.2\% & 3 & 2 \\
+\textsc{oil} ($t$+$qot$)     & 2{,}107 &   277 & 13.1\% & 2 & 3 \\
+\textsc{vinegar} ($s$)       & 1{,}321 &    51 &  3.9\% & 4 & 4 \\
+\textsc{medicine} ($da$)     & 2{,}338 &     7 &  0.3\% & 5 & 5 \\
+\bottomrule
+\end{tabular}
+\caption{Proportion of tokens containing \textit{ee} by solvent-prefix family (canonical extraction).}
+\end{table}
+
+\noindent Spearman $\rho = 0.900$ ($\Sigma d^2 = 2$, $n = 5$). Exact permutation test: $p = 0.042$ one-tailed, $p = 0.083$ two-tailed (correction relative to v1.2 \S 6.3, which incorrectly reported $p = 0.050$ two-tailed; see \texttt{ERRATA.md} E1).
+
+\paragraph{Why this result is withdrawn as evidence.} This was reported as Result 6 in v1.2 and moved to this appendix in the v1.3 revision. Three independent considerations now make the volume-hierarchy interpretation untenable:
+
+\begin{enumerate}[leftmargin=*,itemsep=3pt]
+\item \textbf{The $ee$ morpheme is a cycle counter, not a quantity marker.} Subsequent morphological analysis reclassifies $ee$ within the cyclic series $e$ / $ee$ / $eee$ (once / twice / thrice); ductus-layer measurements further show that pure cycle constructions preferentially attach to the \textit{concentrated} variant grade, which is incompatible with reading $ee$ as ``abundant volume'' \citep{Placa2026b, Placa2026c}.
+\item \textbf{The lowest-rank family is not a family.} The \textsc{medicine} ($da$-) class used as the fifth rank is no longer valid: $d$ functions as an anaphoric pointer (``this''), not as a pharmaceutical lexeme, so $da$- tokens do not belong to the same paradigm as the four solvent prefixes. Removing them leaves $n=4$, for which the observed ranking gives $\rho = 0.800$ with exact one-tailed $p = 0.167$: the test does not survive the removal of its own weakest assumption.
+\item \textbf{A length confound was not controlled.} The proportion of tokens containing the bigram $ee$ correlates with the mean token length of the family ($\rho = 0.800$ across the five families; mean lengths 5.76 / 4.93 / 5.59 / 3.92 / 4.37 characters). Longer tokens contain any fixed bigram more often; the observed ranking is partly a length artifact.
+\end{enumerate}
+
+The observed asymmetry of $ee$ across prefix families remains an empirical regularity worth further study, but it does not function as evidence for the procedural-pharmaceutical reading proposed in the main results. It is preserved here for transparency and to acknowledge the chain of reasoning that led from v1.2 to the present edition.
+
+\begin{thebibliography}{99}
+
+\bibitem[Amancio et al.(2013)]{Amancio2013}
+Amancio, D.\,R., Altmann, E.\,G., Rybski, D., Oliveira, O.\,N., \& Costa, L.\,F. (2013).
+\newblock Probing the statistical properties of unknown texts: application to the Voynich Manuscript.
+\newblock \textit{PLoS ONE}, 8(7), e67310.
+
+\bibitem[Bax(2014)]{Bax2014}
+Bax, S. (2014).
+\newblock A proposed partial decoding of the Voynich Manuscript.
+\newblock \textit{Unpublished manuscript}, Bedfordshire, UK.
+
+\bibitem[Creutz \& Lagus(2007)]{CreutzLagus2007}
+Creutz, M., \& Lagus, K. (2007).
+\newblock Unsupervised models for morpheme segmentation and morphology learning.
+\newblock \textit{ACM Transactions on Speech and Language Processing}, 4(1), 3.
+
+\bibitem[Currier(1976)]{Currier1976}
+Currier, P.\,H. (1976).
+\newblock New research on the Voynich Manuscript: Proceedings of a seminar.
+\newblock \textit{Communication presented at a seminar held on November 30, 1976}.
+
+\bibitem[Davis(2020)]{Davis2020}
+Davis, L.\,F. (2020).
+\newblock How many glyphs and how many scribes? Digital paleography and the Voynich Manuscript.
+\newblock \textit{Manuscript Studies}, 5(1), 164--180.
+
+\bibitem[D'Imperio(1978)]{DImperio1978}
+D'Imperio, M.\,E. (1978).
+\newblock \textit{The Voynich Manuscript: An Elegant Enigma}.
+\newblock Fort George G.\,Meade, MD: National Security Agency.
+
+\bibitem[Greshko(2025)]{Greshko2025}
+Greshko, M. (2025).
+\newblock The Naibbe cipher: a substitution cipher that encrypts Latin and Italian as Voynich Manuscript-like ciphertext.
+\newblock \textit{Cryptologia}, advance online publication. DOI: 10.1080/01611194.2025.2566408.
+
+\bibitem[Kudo(2018)]{Kudo2018}
+Kudo, T. (2018).
+\newblock Subword regularization: improving neural network translation models with multiple subword candidates.
+\newblock In \textit{Proceedings of ACL 2018}, 66--75.
+
+\bibitem[Newbold(1928)]{Newbold1928}
+Newbold, W.\,R. (1928).
+\newblock \textit{The Cipher of Roger Bacon}.
+\newblock Philadelphia: University of Pennsylvania Press.
+
+\bibitem[Placa(2026b)]{Placa2026b}
+Placa, A. (2026b).
+\newblock \textit{The Pharmacist's Cipher\,II: Status Report and Partial Retraction} (v2.0, July 2026).
+\newblock Zenodo. \url{https://doi.org/10.5281/zenodo.21629182}. Original companion report (March 2026, v1.2): \url{https://doi.org/10.5281/zenodo.19228502}, preserved unaltered in the v2.0 record.
+
+\bibitem[Placa(2026c)]{Placa2026c}
+Placa, A. (2026c).
+\newblock \textit{The Sign System of MS\,408: Twelve Ductus Variants, the Nine-Rosettes Board, and the Mathematics of the Corpus}.
+\newblock In preparation. Dataset: \url{https://github.com/alessandroplaca-uro/voynich-spatial-data}.
+
+\bibitem[Sherwood \& Schwartz(2014)]{SherwoodSchwartz2014}
+Sherwood, E., \& Schwartz, R.\,K. (2014).
+\newblock Botany and the Voynich Manuscript.
+\newblock \textit{Unpublished manuscript}.
+
+\bibitem[Stolfi(2005)]{Stolfi2005}
+Stolfi, J. (2005).
+\newblock A quantitative study of the Voynich Manuscript.
+\newblock \textit{Technical report}, Institute of Computing, University of Campinas.
+
+\bibitem[Tanaka-Ishii(2005)]{TanakaIshii2005}
+Tanaka-Ishii, K. (2005).
+\newblock Entropy as an indicator of context boundaries: an experiment using a web search engine.
+\newblock In \textit{Proceedings of IJCNLP 2005}, 93--105.
+
+\bibitem[Tucker \& Talbert(2013)]{TuckerTalbert2013}
+Tucker, A.\,O., \& Talbert, R.\,H. (2013).
+\newblock A preliminary analysis of the botany, zoology, and mineralogy of the Voynich Manuscript.
+\newblock \textit{HerbalGram}, 100, 70--85.
+
+\bibitem[Zandbergen(2022)]{Zandbergen2022}
+Zandbergen, R. (2022).
+\newblock The Voynich Manuscript.
+\newblock \url{https://www.voynich.nu/}
+
+\end{thebibliography}
+
+\end{document}

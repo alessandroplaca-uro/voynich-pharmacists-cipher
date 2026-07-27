@@ -1,13 +1,22 @@
 # AI Verification Guide — Placa (2026)
 
-**Version 1.5 — 2026-04-02**
+**Version 1.6 — 2026-07-27**
+
+> **Version note (2026-07-27):** this guide targets the **v1.1/v1.2
+> extraction** (37,036 tokens) and its published expected values. Preprint
+> v2.0 (https://doi.org/10.5281/zenodo.21629904) recomputes everything on the
+> canonical extraction (37,967 tokens; sedy=0, shedy=427, asymmetry 27:0) and
+> withdraws the former Result 6: see `scripts/07_v2_canonical_recompute.py`
+> and ERRATA.md (E3, E4). The prompts below remain valid for auditing the
+> published v1.2 against its own extraction.
+> (DOI correction: v1.2 is 10.5281/zenodo.19228447; 19197846 is v1.1.)
 
 This guide provides structured prompts for AI-assisted replication of the six
 morphological results reported in:
 
 > Placa, A. (2026). *The Pharmacist's Cipher: Six Statistical Tests Supporting
 > a Pharmaceutical Reading of the Voynich Manuscript (MS 408)*. Preprint v1.2.
-> https://doi.org/10.5281/zenodo.19197846
+> https://doi.org/10.5281/zenodo.19228447
 
 ---
 
